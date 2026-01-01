@@ -5,18 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.tanyde</groupId>
-    <artifactId>mingSu</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>homestay</artifactId>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
-
+        <module>homestay-common</module>
+        <module>homestay-pojo</module>
+        <module>homestay-service</module>
     </modules>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.12</version>
+        <version>3.5.9</version>
         <relativePath/>
     </parent>
 
@@ -24,6 +26,80 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombook>1.18.20</lombook>
+        <druid>1.2.1</druid>
+        <pagehelper>1.3.0</pagehelper>
+        <knife4j>3.0.2</knife4j>
+        <hutool.version>5.8.11</hutool.version>
+        <mysql.version>8.0.33</mysql.version>
+        <mybatis.spring>2.2.0</mybatis.spring>
+
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--数据库驱动-->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <!--mybatis-->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis.spring}</version>
+            </dependency>
+
+            <!--hutool工具包-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <!-- lombok 管理 -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombook}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-starter</artifactId>
+                <version>${druid}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>${knife4j}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>17</source> <!-- depending on your project -->
+                        <target>17</target> <!-- depending on your project -->
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
