@@ -33,7 +33,9 @@
         <hutool.version>5.8.11</hutool.version>
         <mysql.version>8.0.33</mysql.version>
         <mybatis.spring>2.2.0</mybatis.spring>
-
+        <jjwt>0.9.1</jjwt>
+        <fastjson>1.2.76</fastjson>
+        <commons.lang>2.6</commons.lang>
     </properties>
 
     <dependencyManagement>
@@ -82,6 +84,26 @@
                 <artifactId>knife4j-spring-boot-starter</artifactId>
                 <version>${knife4j}</version>
             </dependency>
+
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>${commons.lang}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

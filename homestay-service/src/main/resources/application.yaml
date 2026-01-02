@@ -10,3 +10,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${hm.db.pw}
+homestay:
+  jwt:
+    # 设置jwt签名加密时使用的秘钥
+    admin-secret-key: ittanyde
+    # 设置jwt过期时间（2.9亿年awa）
+    admin-ttl: 9223372036854775
+    # 设置前端传递过来的令牌名称
+    admin-token-name: token
+    user-secret-key: ittanyde
+    user-ttl: 9223372036854775
+    user-token-name: authentication
