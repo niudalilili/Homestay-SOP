@@ -1,4 +1,4 @@
-package com.tanyde.service.admin;
+package com.tanyde.controller.admin;
 
 
 import com.tanyde.result.Result;

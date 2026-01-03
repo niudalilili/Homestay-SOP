@@ -3,6 +3,8 @@ server:
 spring:
   application:
     name: homestay-service
+  main:
+    allow-circular-references: true
   profiles:
     active: dev
   datasource:
@@ -10,6 +12,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: ${hm.db.pw}
+
+logging:
+  level:
+    com:
+      tanyde:
+        mapper: debug
+        service: info
+        controller: info
+
 homestay:
   jwt:
     # 设置jwt签名加密时使用的秘钥
