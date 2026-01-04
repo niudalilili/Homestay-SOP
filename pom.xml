@@ -32,8 +32,9 @@
         <knife4j>3.0.2</knife4j>
         <hutool.version>5.8.11</hutool.version>
         <mysql.version>8.0.33</mysql.version>
-        <mybatis.spring>2.2.0</mybatis.spring>
-        <jjwt>0.9.1</jjwt>
+        <mybatis.spring>3.0.3</mybatis.spring>
+        <aspectj>1.9.4</aspectj>
+        <jjwt>0.12.3</jjwt>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
     </properties>
@@ -77,6 +78,18 @@
                 <groupId>com.github.pagehelper</groupId>
                 <artifactId>pagehelper-spring-boot-starter</artifactId>
                 <version>${pagehelper}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>${aspectj}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>${aspectj}</version>
             </dependency>
 
             <dependency>

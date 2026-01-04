@@ -5,7 +5,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class JwtUtil {
     public static String createJWT(String secretKey,
                                    long ttlMillis,
                                    Map<String, Object>claims){
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         //指定签名算法为Hs256
         SignatureAlgorithm signatureAlgorithm =SignatureAlgorithm.HS256;
         //生成JWT的时间
@@ -33,19 +36,22 @@ public class JwtUtil {
         Date exp=new Date(expMillis);
         //设置jwt的body
         JwtBuilder builder= Jwts.builder()
-                .setClaims(claims)
-                .signWith(signatureAlgorithm,secretKey.getBytes(StandardCharsets.UTF_8))
-                .setExpiration(exp);
+                .claims(claims)
+                .signWith(key)
+                .expiration(exp);
         return builder.compact();
     }
 
 
     public static Claims parseJWT(String secretKey,String token){
+        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
         Claims claims=Jwts.parser()
                 //设置秘钥签名
-                .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                //设置徐亚解析的jwt
-                .parseClaimsJws(token).getBody();
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token) // 0.11+ 使用 .parseSignedClaims(token) 替代 .parseClaimsJws(token)
+                .getPayload();
         return claims;
     }
 }

@@ -21,14 +21,21 @@ logging:
         service: info
         controller: info
 
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.tanyde.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
 homestay:
   jwt:
     # 设置jwt签名加密时使用的秘钥
-    admin-secret-key: ittanyde
+    admin-secret-key:  ittanydeittanydeittanydeittanydeaaa
     # 设置jwt过期时间（2.9亿年awa）
     admin-ttl: 9223372036854775
     # 设置前端传递过来的令牌名称
     admin-token-name: token
-    user-secret-key: ittanyde
+    user-secret-key: ittanydeittanydeittanydeittanydeaaa
     user-ttl: 9223372036854775
     user-token-name: authentication

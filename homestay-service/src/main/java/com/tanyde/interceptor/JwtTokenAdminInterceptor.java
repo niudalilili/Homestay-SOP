@@ -24,6 +24,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
     @Autowired
     private JwtProperties jwtProperties;
+
+    @Override
 /**
  * 预处理请求的拦截器方法
  * 用于验证JWT令牌的有效性，确保只有合法请求能够访问Controller方法
@@ -34,7 +36,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
  * @return boolean 返回true表示放行，返回false表示拦截请求
  * @throws Exception 可能抛出的异常
  */
-    private boolean prehHandle(HttpServletRequest request,
+    public boolean preHandle(HttpServletRequest request,
                                HttpServletResponse response,
                                Object handler) throws Exception {
         //判断当前拦截到的是Controller的方式还是其他资源
