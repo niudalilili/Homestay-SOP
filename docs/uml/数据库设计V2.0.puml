@@ -11,15 +11,17 @@ entity "activity_plan" as activity_plan {
   age_group : VARCHAR(50) \t\t 适用年龄段
   activity_category : VARCHAR(50) \t 活动类别
  【（植物，户外技能，红色文化，地理地质）单选】
-  season : VARCHAR(20) \t\t\t 适合季节
+  season : TINYINT \t\t\t\t 适合季节
   【（季节掩码：1春 2夏 4秋 8冬,可多选）】
   duration : INT \t\t\t\t\t 活动总时长(分钟)
   scene : TINYINT \t\t\t\t 活动场景
   \t\t\t\t\t\t\t 【(1 室外 0 通用)】
   status : TINYINT \t\t\t\t 状态
   \t\t\t\t\t\t\t 【(1 草稿 2 上线 3 下线)】
-  created_at : DATETIME \t\t\t 创建时间
-  updated_at : DATETIME \t\t 修改时间
+  created_time : DATETIME \t\t 创建时间
+  updated_time : DATETIME \t\t 修改时间
+  created_user : BIGINT \t\t\t 创建用户
+  updated_user : BIGINT \t\t\t 修改用户
 }
 
 ' ================= 1:1 扩展内容表 =================
@@ -45,6 +47,8 @@ entity "activity_plan_content" as content {
 
   created_at : DATETIME \t\t\t\t 创建时间
   updated_at : DATETIME \t\t\t 修改时间
+  created_user : BIGINT \t\t\t\t 创建用户
+  updated_user : BIGINT \t\t\t\t 修改用户
 }
 
 ' ================= 1:N 步骤表 =================
@@ -68,6 +72,8 @@ entity "activity_step" as step {
 
   created_at : DATETIME \t\t\t 创建时间
   updated_at : DATETIME \t\t 修改时间
+  created_user : BIGINT \t\t\t 创建用户
+  updated_user : BIGINT \t\t\t 修改用户
 }
 
 ' ================= 关系 =================
