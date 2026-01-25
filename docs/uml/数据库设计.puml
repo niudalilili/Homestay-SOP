@@ -1,0 +1,97 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+' ================= 单表 =================
+
+entity "activity_plan" as activity_plan {
+  + id : BIGINT <<PK>> \t\t\t\t 主键
+  --
+  plan_name : VARCHAR(100) \t\t 活动方案名称
+  age_group : VARCHAR(50) \t\t 适用年龄段
+  activity_category : VARCHAR(50) \t 活动类别 \n (植物，户外技能，红色文化，地理性质)四选一
+  season : VARCHAR(20) \t\t\t 适合季节 \n (季节掩码:1春 2夏 4秋 8冬)多选
+  duration : INT \t\t\t\t\t 活动时长(分钟)
+  scene : TINYINT \t\t\t\t 活动场景 \n (1室内 0通用)单选
+  status : TINYINT \t\t\t\t 状态 \n(1草稿 2上线 3下线)
+  created_at : DATETIME \t\t\t 创建时间
+  updated_at : DATETIME \t\t 修改时间
+}
+
+entity "activity_goal" as goal {
+  + id : BIGINT <<PK>> \t\t\t 主键
+  --
+  knowledge_goal : TEXT \t\t\t 知识目标
+  emotion_goal : TEXT \t\t\t 情感目标
+  created_at : DATETIME \t\t\t 创建时间
+  updated_at : DATETIME \t\t 修改时间
+}
+
+entity "activity_preparation" as preparation {
+  + id : BIGINT <<PK>> \t\t\t 主键
+  --
+  materials : TEXT \t\t\t 所需材料清单
+  space_requirement : TEXT \t 场地目标
+  preparation_time : INT \t\t 准备时间(分钟)
+  staff_tips : TEXT \t\t\t 员工准备提示
+  created_at : DATETIME \t\t 创建时间
+  updated_at : DATETIME \t 修改时间
+}
+
+entity "activity_safety" as safety {
+  + id : BIGINT <<PK>> \t\t\t 主键
+  --
+  general_warning : TEXT \t\t 通用安全提示
+  special_reminder : TEXT \t 特殊提醒
+  created_at : DATETIME \t\t 创建时间
+  updated_at : DATETIME \t 修改时间
+}
+
+entity "activity_step" as step {
+  + id : BIGINT <<PK>> \t\t\t 主键
+  --
+  step_number : INT \t\t\t\t 步骤顺序
+  step_title : VARCHAR(200) \t\t 步骤名称
+  duration : INT \t\t\t\t\t 步骤时长(分钟)
+  step_type : INT \t\t\t\t 步骤种类 \n 【1 讲解步骤(除了内容小结其他都要填) 2总结步骤(只填内容小结)】
+  knowledge_explanation : TEXT  \t 知识讲解
+  action_desc : TEXT \t\t\t 操纵说明
+  guidance_speech : TEXT \t\t 引导话术
+  interaction_tips : TEXT \t\t\t 互动提示
+  summary : TEXT \t\t\t\t 内容小结
+  created_at : DATETIME \t\t\t 创建时间
+  updated_at : DATETIME \t\t 修改时间
+}
+
+' ================= 多表关系 =================
+
+entity "activity_plan_content" as content {
+  + id : BIGINT <<PK>>
+  --
+  activity_plan_id : BIGINT <<UK, FK>> \t\t 活动主键
+  activity_goal_id : BIGINT <<UK, FK>> \t\t 活动目标
+  activity_preparation_id : BIGINT <<UK, FK>> \t 活动准备
+  activity_safety_id : BIGINT <<UK, FK>> \t\t 安全提醒
+}
+
+entity "activity_plan_step_content" as step_content {
+  + id : BIGINT <<PK>>
+  --
+  activity_plan_id : BIGINT <<UK, FK>> \t\t 活动主键
+  activity_step_id : BIGINT <<UK, FK>> \t\t 活动目标
+}
+
+
+' ================= 关系 =================
+
+activity_plan ||--|| content : "1 : 1"
+goal ||--|| content :"1 : 1"
+preparation ||--|| content :"1 : 1"
+safety ||--|| content :"1 : 1"
+
+activity_plan ||--|| step_content :"1 : 1"
+step_content ||--o{ step : "1 : N"
+
+
+
+@enduml

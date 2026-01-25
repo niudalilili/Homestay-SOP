@@ -1,0 +1,78 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+' ================= 主表 =================
+
+entity "activity_plan" as activity_plan {
+  + id : BIGINT <<PK>> \t\t\t    主键
+  --
+  plan_name : VARCHAR(100) \t\t 活动方案名称
+  age_group : VARCHAR(50) \t\t 适用年龄段
+  activity_category : VARCHAR(50) \t 活动类别
+ 【（植物，户外技能，红色文化，地理地质）单选】
+  season : VARCHAR(20) \t\t\t 适合季节
+  【（季节掩码：1春 2夏 4秋 8冬,可多选）】
+  duration : INT \t\t\t\t\t 活动总时长(分钟)
+  scene : TINYINT \t\t\t\t 活动场景
+  \t\t\t\t\t\t\t 【(1 室外 0 通用)】
+  status : TINYINT \t\t\t\t 状态
+  \t\t\t\t\t\t\t 【(1 草稿 2 上线 3 下线)】
+  created_at : DATETIME \t\t\t 创建时间
+  updated_at : DATETIME \t\t 修改时间
+}
+
+' ================= 1:1 扩展内容表 =================
+
+entity "activity_plan_content" as content {
+  + id : BIGINT <<PK>>
+  --
+  activity_plan_id : BIGINT <<UK, FK>> \t 活动方案ID
+
+  ' ---- 活动目标 ----
+  knowledge_goal : TEXT \t\t\t\t 知识目标
+  emotion_goal : TEXT \t\t\t\t 情感目标
+
+  ' ---- 活动准备 ----
+  materials : TEXT \t\t\t\t\t 所需材料
+  space_requirement : TEXT \t\t\t 场地要求
+  preparation_time : INT \t\t\t\t 准备时间(分钟)
+  staff_tips : TEXT \t\t\t\t\t 员工准备提示
+
+  ' ---- 安全提示 ----
+  general_warning : TEXT \t\t\t\t 通用安全提示
+  special_reminder : TEXT \t\t\t 特殊安全提醒
+
+  created_at : DATETIME \t\t\t\t 创建时间
+  updated_at : DATETIME \t\t\t 修改时间
+}
+
+' ================= 1:N 步骤表 =================
+
+entity "activity_step" as step {
+  + id : BIGINT <<PK>>
+  --
+  activity_plan_id : BIGINT <<FK>> \t 活动方案ID
+  step_number : INT \t\t\t\t 步骤顺序
+  step_title : VARCHAR(200) \t\t 步骤名称
+  duration : INT \t\t\t\t\t 步骤时长(分钟)
+
+  step_type : TINYINT \t\t\t 步骤类型
+ 【1 讲解步骤 2 总结步骤 】
+
+  knowledge_explanation : TEXT \t 知识讲解
+  action_desc : TEXT \t\t\t 操作说明
+  guidance_speech : TEXT \t\t 引导话术
+  interaction_tips : TEXT \t\t\t 互动提示
+  summary : TEXT \t\t\t\t 内容小结
+
+  created_at : DATETIME \t\t\t 创建时间
+  updated_at : DATETIME \t\t 修改时间
+}
+
+' ================= 关系 =================
+
+activity_plan ||--|| content : "1 : 1"
+activity_plan ||--o{ step : "1 : N"
+
+@enduml
