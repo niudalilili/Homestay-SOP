@@ -4,11 +4,17 @@
 <mapper namespace="com.tanyde.mapper.ActivityPlanMapper">
 
 
-    <insert id="insert">
+    <insert id="insert"
+            useGeneratedKeys="true"
+            keyProperty="id">
             insert into activity_plan
-                (plan_name, age_group, activity_category, season, duration, scene, status, created_time, updated_time, created_user, updated_user)
+                (plan_name, age_group, activity_category,
+                 season, duration, scene, status,
+                 create_time, update_time, create_user, update_user)
             values
-                (#{plantName}, #{ageGroup}, #{activityCategory}, #{season}, #{duration}, #{scene}, #{status}, #{createdTime}, #{updatedTime}, #{createdUser}, #{updatedUser})
+                (#{planName}, #{ageGroup}, #{activityCategory},
+                 #{season}, #{duration}, #{scene}, #{status},
+                 #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
 </mapper>

@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ActivityPlanDTO implements Serializable {
 
-    private String plantName;
+    private String planName;
 
     private String ageGroup;
 
@@ -26,10 +26,10 @@ public class ActivityPlanDTO implements Serializable {
 
     private Integer duration;
 
-    private Integer scence;
+    private Integer scene;
 
-    private ActivityPlanContentDTO activityPlanContentDTO;
+    private ActivityPlanContentDTO content;
 
-    private ArrayList<ActivityStepDTO> activityStepDTOs;
+    private ArrayList<ActivityStepDTO> steps;
 
 }

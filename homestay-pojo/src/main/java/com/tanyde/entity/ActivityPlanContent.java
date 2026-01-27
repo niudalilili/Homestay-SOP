@@ -35,7 +35,7 @@ public class ActivityPlanContent implements Serializable {
 
     private String generalWarning;
 
-    private String spacialReminder;
+    private String specialReminder;
 
     private LocalDateTime createTime;
 

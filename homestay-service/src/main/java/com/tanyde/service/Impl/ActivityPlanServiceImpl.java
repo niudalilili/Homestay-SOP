@@ -1,6 +1,7 @@
 package com.tanyde.service.Impl;
 
 
+import com.tanyde.context.BaseContext;
 import com.tanyde.dto.ActivityPlanDTO;
 import com.tanyde.dto.ActivityStepDTO;
 import com.tanyde.entity.ActivityPlan;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Service
@@ -50,10 +52,11 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         //获得主表主键
         Long planId=activityPlan.getId();
 
+
         //1对1关联表
         ActivityPlanContent activityPlanContent=new ActivityPlanContent();
         BeanUtils.copyProperties(
-                activityPlanDTO.getActivityPlanContentDTO(),activityPlanContent);
+                activityPlanDTO.getContent(),activityPlanContent);
         //设置关联主表外键
         activityPlanContent.setActivityPlanId(planId);
         //写入活动关联表
@@ -62,11 +65,15 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         //1对多步骤表
         ArrayList<ActivityStep> activitySteps=new ArrayList<>();
         //批量复制
-        for (ActivityStepDTO activityStepDTO : activityPlanDTO.getActivityStepDTOs()) {
+        for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
             ActivityStep activityStep=new ActivityStep();
             BeanUtils.copyProperties(activityStepDTO,activityStep);
-            //设置关联主表外键
-            activityStep.setId(planId);
+            //设置关联主表外键和时间用户
+            activityStep.setActivityPlanId(planId);
+            activityStep.setCreateTime(LocalDateTime.now());
+            activityStep.setUpdateTime(LocalDateTime.now());
+            activityStep.setCreateUser(BaseContext.getCurrentId());
+            activityStep.setUpdateUser(BaseContext.getCurrentId());
             //加入List
             activitySteps.add(activityStep);
         }

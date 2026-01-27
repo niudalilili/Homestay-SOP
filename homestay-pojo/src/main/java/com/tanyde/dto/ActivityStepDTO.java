@@ -26,7 +26,7 @@ public class ActivityStepDTO implements Serializable {
 
     private String guidanceSpeech;
 
-    private String interationTips;
+    private String interactionTips;
 
     private String summary;
 }

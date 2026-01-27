@@ -18,7 +18,7 @@ public class ActivityPlan implements Serializable {
 
     private Long id;
 
-    private String plantName;
+    private String planName;
 
     private String ageGroup;
 
@@ -28,7 +28,7 @@ public class ActivityPlan implements Serializable {
 
     private Integer duration;
 
-    private Integer scence;
+    private Integer scene;
 
     private Integer status;
 

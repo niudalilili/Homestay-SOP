@@ -9,13 +9,13 @@
             (activity_plan_id, step_number, step_title, duration,
              step_type, knowledge_explanation, action_desc, guidance_speech,
              interaction_tips, summary,
-             created_time, updated_time, created_user, updated_user)
+             create_time, update_time, create_user, update_user)
         VALUES 
             <foreach collection="steps" item="item" separator=",">
                 (#{item.activityPlanId}, #{item.stepNumber}, #{item.stepTitle}, #{item.duration},
                  #{item.stepType}, #{item.knowledgeExplanation}, #{item.actionDesc}, #{item.guidanceSpeech},
                  #{item.interactionTips}, #{item.summary},
-                 #{item.createdTime}, #{item.updatedTime}, #{item.createdUser}, #{item.updatedUser})
+                 #{item.createTime}, #{item.updateTime}, #{item.createUser}, #{item.updateUser})
             </foreach>
     </insert>
 

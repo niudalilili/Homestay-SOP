@@ -35,7 +35,7 @@ public class ActivityStep implements Serializable {
 
     private String guidanceSpeech;
 
-    private String interationTips;
+    private String interactionTips;
 
     private String summary;
 

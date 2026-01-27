@@ -6,9 +6,15 @@
 
     <insert id="insert">
             insert into activity_plan_content
-                (activity_plan_id, knowledge_goal, emotion_goal, materials, space_requirement, preparation_time, staff_tips, general_warning, special_reminder, created_time, updated_time, created_user, updated_user)
+                (activity_plan_id, knowledge_goal, emotion_goal,
+                 materials, space_requirement, preparation_time,
+                 staff_tips, general_warning, special_reminder,
+                 create_time, update_time, create_user, update_user)
             values
-                (#{activityPlanId}, #{knowledgeGoal}, #{emotionGoal}, #{materials}, #{spaceRequirement}, #{preparationTime}, #{staffTips}, #{generalWarning}, #{specialReminder}, #{createdTime}, #{updatedTime}, #{createdUser}, #{updatedUser})
+                (#{activityPlanId}, #{knowledgeGoal}, #{emotionGoal},
+                 #{materials}, #{spaceRequirement}, #{preparationTime},
+                 #{staffTips}, #{generalWarning}, #{specialReminder},
+                 #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
 </mapper>

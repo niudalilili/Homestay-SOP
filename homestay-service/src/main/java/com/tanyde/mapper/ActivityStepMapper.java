@@ -19,6 +19,5 @@ public interface ActivityStepMapper {
      * @author TanyDe
      * @create 2026/1/27
      **/
-    @AutoFill(value= OperationType.INSERT)
     int batchInsert(@Param("steps")ArrayList<ActivityStep> activitySteps);
 }

@@ -28,7 +28,7 @@ public class ActivityPlanContentDTO implements Serializable {
 
     private String generalWarning;
 
-    private String spacialReminder;
+    private String specialReminder;
 
 
 
