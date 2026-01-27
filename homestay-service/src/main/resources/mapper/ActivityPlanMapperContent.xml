@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.ActivityPlanContentMapper">
+
+
+    <insert id="insert">
+            insert into activity_plan_content
+                (activity_plan_id, knowledge_goal, emotion_goal, materials, space_requirement, preparation_time, staff_tips, general_warning, special_reminder, created_time, updated_time, created_user, updated_user)
+            values
+                (#{activityPlanId}, #{knowledgeGoal}, #{emotionGoal}, #{materials}, #{spaceRequirement}, #{preparationTime}, #{staffTips}, #{generalWarning}, #{specialReminder}, #{createdTime}, #{updatedTime}, #{createdUser}, #{updatedUser})
+    </insert>
+
+</mapper>

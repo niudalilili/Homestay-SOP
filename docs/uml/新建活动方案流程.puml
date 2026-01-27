@@ -1,0 +1,55 @@
+@startuml
+hide footbox
+skinparam linetype ortho
+
+actor Client as 客户端
+participant Controller as ActivityPlanController
+participant Service as ActivityPlanService
+participant DB as 数据库
+
+== 新增活动方案 ==
+
+客户端 -> Controller : POST /api/activity-plans\n（方案 + 内容 + 步骤）
+Controller -> Controller : 参数校验\n（必填 / stepNumber / season掩码）
+
+Controller -> Service : createActivityPlan(dto)
+
+activate Service
+Service -> DB : BEGIN TRANSACTION
+
+Service -> DB : INSERT activity_plan\n返回 planId
+note right of DB
+生成主键 planId
+作为聚合根ID
+end note
+
+Service -> DB : INSERT activity_plan_content\n(activity_plan_id = planId)
+note right of DB
+1:1 表\nUNIQUE(activity_plan_id)
+end note
+
+Service -> DB : BATCH INSERT activity_step\n(activity_plan_id = planId)
+note right of DB
+1:N 表\n(step_number 唯一)
+end note
+
+Service -> DB : COMMIT
+
+deactivate Service
+
+Service --> Controller : 创建成功
+Controller --> 客户端 : 200 OK / planId
+
+== 异常情况 ==
+
+Service -> DB : ROLLBACK
+note right of Service
+任一步失败：
+- 外键失败
+- 唯一约束
+- 业务校验异常
+end note
+
+Controller --> 客户端 : 4xx / 5xx 错误信息
+
+@enduml

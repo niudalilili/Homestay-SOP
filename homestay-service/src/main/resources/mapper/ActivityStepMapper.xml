@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.ActivityStepMapper">
+
+
+    <insert id="batchInsert">
+        INSERT INTO activity_step
+            (activity_plan_id, step_number, step_title, duration,
+             step_type, knowledge_explanation, action_desc, guidance_speech,
+             interaction_tips, summary,
+             created_time, updated_time, created_user, updated_user)
+        VALUES 
+            <foreach collection="steps" item="item" separator=",">
+                (#{item.activityPlanId}, #{item.stepNumber}, #{item.stepTitle}, #{item.duration},
+                 #{item.stepType}, #{item.knowledgeExplanation}, #{item.actionDesc}, #{item.guidanceSpeech},
+                 #{item.interactionTips}, #{item.summary},
+                 #{item.createdTime}, #{item.updatedTime}, #{item.createdUser}, #{item.updatedUser})
+            </foreach>
+    </insert>
+
+</mapper>

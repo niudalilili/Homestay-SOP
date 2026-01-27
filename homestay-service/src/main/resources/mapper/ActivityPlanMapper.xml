@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.ActivityPlanMapper">
+
+
+    <insert id="insert">
+            insert into activity_plan
+                (plan_name, age_group, activity_category, season, duration, scene, status, created_time, updated_time, created_user, updated_user)
+            values
+                (#{plantName}, #{ageGroup}, #{activityCategory}, #{season}, #{duration}, #{scene}, #{status}, #{createdTime}, #{updatedTime}, #{createdUser}, #{updatedUser})
+    </insert>
+
+</mapper>

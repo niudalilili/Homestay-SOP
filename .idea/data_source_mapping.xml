@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/homestay-service/src/main/java/com/tanyde/mapper/EmployeeMapper.java" value="1b40ea52-0eda-447e-baae-bd7398fc3cad" />
-    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/EmployeeMapper.xml" value="1b40ea52-0eda-447e-baae-bd7398fc3cad" />
+    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/ActivityPlanMapper.xml" value="4d77212f-0d51-4145-9415-00469dd5c2f4" />
+    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/ActivityPlanMapperContent.xml" value="4d77212f-0d51-4145-9415-00469dd5c2f4" />
+    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/ActivityStepMapper.xml" value="4d77212f-0d51-4145-9415-00469dd5c2f4" />
   </component>
 </project>
