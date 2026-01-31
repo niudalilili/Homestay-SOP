@@ -8,10 +8,9 @@ import com.tanyde.service.EmployeeService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 方案管理
@@ -36,11 +35,43 @@ public class ActivityPlanController {
      * @create 2026/1/27
      **/
     @PostMapping
-    @ApiOperation("新增活动方案主表")
+    @ApiOperation("新增活动方案")
     public Result save(@RequestBody ActivityPlanDTO activityPlanDTO){
         log.info("新增活动方案:{}",activityPlanDTO);
         activityPlanService.save(activityPlanDTO);
         return Result.success();
+    }
+    
+    /**
+     * 根据ids删除活动方案
+     * 
+     * @param ids
+     * @return 
+     * @author TanyDe
+     * @create 2026/1/31
+     **/
+    @DeleteMapping("/batch")
+    @ApiOperation("根据ids删除活动方案")
+    public Result deletById(@RequestBody List<Long> ids){
+        log.info("根据id删除活动方案:{}",ids);
+        activityPlanService.deleteByIds(ids);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询活动方案
+     *
+     * @param id
+     * @return
+     * @author TanyDe
+     * @create 2026/1/31
+     **/
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询活动方案")
+    public Result<ActivityPlanDTO> selectById(@PathVariable Long id){
+        ActivityPlanDTO activityPlanDTO=activityPlanService.selectById(id);
+        log.info("根据id:{}查询活动方案:{}",id,activityPlanDTO);
+        return Result.success(activityPlanDTO);
     }
 
 

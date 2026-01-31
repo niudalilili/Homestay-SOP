@@ -19,4 +19,23 @@
             </foreach>
     </insert>
 
+    <delete id="deleteByActivityIds">
+        delete from activity_step
+        where activity_plan_id in
+        <foreach collection="ids" item="id"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByPlanId" resultType="com.tanyde.entity.ActivityStep">
+        select id, activity_plan_id, step_number,
+               step_title, duration, step_type,
+               knowledge_explanation, action_desc, guidance_speech,
+               interaction_tips, summary,
+               create_time, update_time, create_user, update_user
+        from activity_step
+        where activity_plan_id=#{id}
+    </select>
+
 </mapper>

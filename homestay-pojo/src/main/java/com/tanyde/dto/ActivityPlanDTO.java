@@ -30,6 +30,6 @@ public class ActivityPlanDTO implements Serializable {
 
     private ActivityPlanContentDTO content;
 
-    private ArrayList<ActivityStepDTO> steps;
+    private List<ActivityStepDTO> steps;
 
 }
