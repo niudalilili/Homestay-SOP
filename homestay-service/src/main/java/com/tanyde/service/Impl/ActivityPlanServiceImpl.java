@@ -1,9 +1,12 @@
 package com.tanyde.service.Impl;
 
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.tanyde.context.BaseContext;
 import com.tanyde.dto.ActivityPlanContentDTO;
 import com.tanyde.dto.ActivityPlanDTO;
+import com.tanyde.dto.ActivityPlanPageQueryDTO;
 import com.tanyde.dto.ActivityStepDTO;
 import com.tanyde.entity.ActivityPlan;
 import com.tanyde.entity.ActivityPlanContent;
@@ -11,6 +14,7 @@ import com.tanyde.entity.ActivityStep;
 import com.tanyde.mapper.ActivityPlanContentMapper;
 import com.tanyde.mapper.ActivityPlanMapper;
 import com.tanyde.mapper.ActivityStepMapper;
+import com.tanyde.result.PageResult;
 import com.tanyde.service.ActivityPlanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,5 +138,19 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         activityPlanDTO.setSteps(activityStepDTOs);
 
         return activityPlanDTO;
+    }
+
+    /**
+     * 分页查询活动方案
+     * @param dto
+     **/
+    @Override
+    public PageResult pageQuery(ActivityPlanPageQueryDTO dto) {
+        //设置分页参数
+        PageHelper.startPage(dto.getPage(),dto.getPageSize());
+        //获得数据库数据
+        Page<ActivityPlan> page=activityPlanMapper.pageQuery(dto);
+        //返回pageResult
+        return new PageResult(page.getTotal(),page.getResult());
     }
 }

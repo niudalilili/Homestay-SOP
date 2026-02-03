@@ -1,7 +1,9 @@
 package com.tanyde.mapper;
 
 
+import com.github.pagehelper.Page;
 import com.tanyde.annotation.AutoFill;
+import com.tanyde.dto.ActivityPlanPageQueryDTO;
 import com.tanyde.entity.ActivityPlan;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Insert;
@@ -40,4 +42,11 @@ public interface ActivityPlanMapper {
      * @return java.lang.Object
      **/
     ActivityPlan selectById(Long id);
+
+    /**
+     * 分页查询
+     * @param dto
+     * @return
+     **/
+    Page<ActivityPlan> pageQuery(ActivityPlanPageQueryDTO dto);
 }
