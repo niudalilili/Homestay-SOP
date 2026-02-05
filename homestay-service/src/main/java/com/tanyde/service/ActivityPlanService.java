@@ -13,7 +13,7 @@ public interface ActivityPlanService {
     /**
      * 保存活动方案
      *
-    * @param activityPlanDTO
+     * @param activityPlanDTO
      * @return void
      * @author TanyDe
      * @create 2026/1/27
@@ -23,7 +23,7 @@ public interface ActivityPlanService {
     /**
      * 根据ids删除活动方案
      *
-    * @param ids
+     * @param ids
      * @return void
      * @author TanyDe
      * @create 2026/1/27
@@ -42,7 +42,27 @@ public interface ActivityPlanService {
 
     /**
      * 分页查询活动方案
+     *
      * @param dto
      **/
     PageResult pageQuery(ActivityPlanPageQueryDTO dto);
+
+    /**
+     * 更新活动方案
+     *
+     * @param activityPlanDTO
+     * @return
+     * @date:
+     **/
+    void update(ActivityPlanDTO activityPlanDTO);
+
+    /**
+     * 修改状态
+     *
+     * @param id
+     * @param status
+     * @return
+     * @date:
+     **/
+    void changeStatus(Long id, Integer status);
 }

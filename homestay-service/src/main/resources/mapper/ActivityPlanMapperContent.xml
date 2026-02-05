@@ -16,6 +16,42 @@
                  #{staffTips}, #{generalWarning}, #{specialReminder},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
+    <update id="update">
+        update activity_plan_content
+        <set>
+            <if test="knowledgeGoal!=null and knowledgeGoal!=''">
+                knowledge_goal=#{knowledgeGoal},
+            </if>
+            <if test="emotionGoal!=null and emotionGoal!=''">
+                emotion_goal=#{emotionGoal},
+            </if>
+            <if test="materials!=null and materials!=''">
+                materials=#{materials},
+            </if>
+            <if test="spaceRequirement!=null and spaceRequirement!=''">
+                space_requirement=#{spaceRequirement},
+            </if>
+            <if test="preparationTime!=null and preparationTime!=''">
+                preparation_time=#{preparationTime},
+            </if>
+            <if test="staffTips!=null and staffTips!=''">
+                staff_tips=#{staffTips},
+            </if>
+            <if test="generalWarning!=null and generalWarning!=''">
+                general_warning=#{generalWarning},
+            </if>
+            <if test="specialReminder!=null and specialReminder!=''">
+                special_reminder=#{specialReminder},
+            </if>
+            <if test="updateTime!=null">
+                update_time=#{updateTime},
+            </if>
+            <if test="updateUser!=null">
+                update_user=#{updateUser},
+            </if>
+        </set>
+        where activity_plan_id=#{activityPlanId}
+    </update>
 
     <delete id="deleteByActivityIds">
         delete from activity_plan_content

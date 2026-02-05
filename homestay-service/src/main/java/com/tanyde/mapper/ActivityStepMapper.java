@@ -1,6 +1,7 @@
 package com.tanyde.mapper;
 
 import com.tanyde.annotation.AutoFill;
+import com.tanyde.entity.ActivityPlan;
 import com.tanyde.entity.ActivityStep;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,4 +40,6 @@ public interface ActivityStepMapper {
      * @return
      **/
     List<ActivityStep> selectByPlanId(Long id);
+
+
 }

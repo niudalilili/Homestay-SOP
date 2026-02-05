@@ -15,6 +15,9 @@ import com.tanyde.mapper.ActivityPlanContentMapper;
 import com.tanyde.mapper.ActivityPlanMapper;
 import com.tanyde.mapper.ActivityStepMapper;
 import com.tanyde.result.PageResult;
+import com.tanyde.enumeration.ActivityStatus;
+import com.tanyde.exception.BaseException;
+import org.springframework.util.CollectionUtils;
 import com.tanyde.service.ActivityPlanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,33 +48,40 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(ActivityPlanDTO activityPlanDTO) {
-        //活动主表
-        ActivityPlan activityPlan=new ActivityPlan();
+        // 1. 防御性检查 (尽管Controller层有校验，Service层建议保留兜底)
+        if (activityPlanDTO.getContent() == null) {
+            throw new BaseException("活动方案扩展内容不能为空");
+        }
+        if (CollectionUtils.isEmpty(activityPlanDTO.getSteps())) {
+            throw new BaseException("活动步骤不能为空");
+        }
+        //2.活动主表
+        ActivityPlan activityPlan = new ActivityPlan();
         //复制相同类
-        BeanUtils.copyProperties(activityPlanDTO,activityPlan);
-        //设置状态为草稿
-        activityPlan.setStatus(1);
+        BeanUtils.copyProperties(activityPlanDTO, activityPlan);
+        // 修复：使用枚举替代魔法值 1
+        activityPlan.setStatus(ActivityStatus.DRAFT.getCode());
         //写入活动方案主表
         activityPlanMapper.insert(activityPlan);
 
         //获得主表主键
-        Long planId=activityPlan.getId();
+        Long planId = activityPlan.getId();
 
-        //1对1关联表
-        ActivityPlanContent activityPlanContent=new ActivityPlanContent();
+        //3.1对1关联表
+        ActivityPlanContent activityPlanContent = new ActivityPlanContent();
         BeanUtils.copyProperties(
-                activityPlanDTO.getContent(),activityPlanContent);
+                activityPlanDTO.getContent(), activityPlanContent);
         //设置关联主表外键
         activityPlanContent.setActivityPlanId(planId);
         //写入活动关联表
         activityPlanContentMapper.insert(activityPlanContent);
 
-        //1对多步骤表
-        ArrayList<ActivityStep> activitySteps=new ArrayList<>();
+        //4. 1对多步骤表
+        List<ActivityStep> activitySteps = new ArrayList<>();
         //批量复制
         for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
-            ActivityStep activityStep=new ActivityStep();
-            BeanUtils.copyProperties(activityStepDTO,activityStep);
+            ActivityStep activityStep = new ActivityStep();
+            BeanUtils.copyProperties(activityStepDTO, activityStep);
             //设置关联主表外键和时间用户
             activityStep.setActivityPlanId(planId);
             activityStep.setCreateTime(LocalDateTime.now());
@@ -82,10 +92,11 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
             activitySteps.add(activityStep);
         }
         //批量写入活动步骤表
-        int rows=activityStepMapper.batchInsert(activitySteps);
-        //检查批量插入数量是否与steps数量一样
-        if(rows!=activitySteps.size()){
-            throw new  IllegalStateException("步骤批量写入数量不一致");
+        if (!activitySteps.isEmpty()) {
+            int rows = activityStepMapper.batchInsert((ArrayList<ActivityStep>) activitySteps);
+            if (rows != activitySteps.size()) {
+                throw new IllegalStateException("步骤批量写入数量不一致");
+            }
         }
     }
 
@@ -100,6 +111,17 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteByIds(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+
+        // 修复：删除前检查状态，禁止删除已上线活动
+        for (Long id : ids) {
+            ActivityPlan plan = activityPlanMapper.selectById(id);
+            if (plan != null && ActivityStatus.ONLINE.getCode().equals(plan.getStatus())) {
+                throw new BaseException("活动【" + plan.getPlanName() + "】处于上线状态，无法删除");
+            }
+        }
         //删主表
         activityPlanMapper.deleteByIds(ids);
         //删联表
@@ -118,19 +140,19 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
      **/
     @Override
     public ActivityPlanDTO selectById(Long id) {
-        ActivityPlanDTO activityPlanDTO=new ActivityPlanDTO();
+        ActivityPlanDTO activityPlanDTO = new ActivityPlanDTO();
         //查主表并赋值
-        BeanUtils.copyProperties(activityPlanMapper.selectById(id),activityPlanDTO);
+        BeanUtils.copyProperties(activityPlanMapper.selectById(id), activityPlanDTO);
         //查关联表
-        ActivityPlanContentDTO activityPlanContentDTO=new ActivityPlanContentDTO();
-        BeanUtils.copyProperties(activityPlanContentMapper.selectByPlanId(id),activityPlanContentDTO);
+        ActivityPlanContentDTO activityPlanContentDTO = new ActivityPlanContentDTO();
+        BeanUtils.copyProperties(activityPlanContentMapper.selectByPlanId(id), activityPlanContentDTO);
         //查步骤表
-        List<ActivityStepDTO> activityStepDTOs=new ArrayList<>();
-        List<ActivityStep> activitySteps=activityStepMapper.selectByPlanId(id);
+        List<ActivityStepDTO> activityStepDTOs = new ArrayList<>();
+        List<ActivityStep> activitySteps = activityStepMapper.selectByPlanId(id);
         //格式转换
         for (ActivityStep activityStep : activitySteps) {
-            ActivityStepDTO activityStepDTO=new ActivityStepDTO();
-            BeanUtils.copyProperties(activityStep,activityStepDTO);
+            ActivityStepDTO activityStepDTO = new ActivityStepDTO();
+            BeanUtils.copyProperties(activityStep, activityStepDTO);
             activityStepDTOs.add(activityStepDTO);
         }
         //合并赋值
@@ -142,15 +164,123 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
 
     /**
      * 分页查询活动方案
+     *
      * @param dto
      **/
     @Override
     public PageResult pageQuery(ActivityPlanPageQueryDTO dto) {
         //设置分页参数
-        PageHelper.startPage(dto.getPage(),dto.getPageSize());
+        PageHelper.startPage(dto.getPage(), dto.getPageSize());
         //获得数据库数据
-        Page<ActivityPlan> page=activityPlanMapper.pageQuery(dto);
+        Page<ActivityPlan> page = activityPlanMapper.pageQuery(dto);
         //返回pageResult
-        return new PageResult(page.getTotal(),page.getResult());
+        return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 更新活动方案
+     *
+     * @param activityPlanDTO
+     * @return
+     * @date:
+     **/
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(ActivityPlanDTO activityPlanDTO) {
+        // 检查ID是否为空
+        if (activityPlanDTO.getId() == null) {
+            throw new IllegalArgumentException("活动方案ID不能为空");
+        }
+        //1.更新主表
+        //复制
+        ActivityPlan activityPlan = new ActivityPlan();
+        BeanUtils.copyProperties(activityPlanDTO, activityPlan);
+        //更新数据库
+        int updatedRows = activityPlanMapper.update(activityPlan);
+        if (updatedRows == 0) {
+            throw new IllegalStateException("活动方案不存在或更新失败");
+        }
+
+        //获得id
+        Long planId = activityPlanDTO.getId();
+
+        //2.更新关联表
+        if (activityPlanDTO.getContent() != null) {
+            // 首先检查关联表是否存在，不存在则插入
+            ActivityPlanContent existingContent = activityPlanContentMapper.selectByPlanId(planId);
+
+            ActivityPlanContent activityPlanContent = new ActivityPlanContent();
+            BeanUtils.copyProperties(activityPlanDTO.getContent(), activityPlanContent);
+            //设置外键
+            activityPlanContent.setActivityPlanId(planId);
+            if (existingContent == null) {
+                // 插入新记录
+                activityPlanContentMapper.insert(activityPlanContent);
+            } else {
+                // 更新现有记录
+                activityPlanContent.setId(existingContent.getId());
+                activityPlanContentMapper.update(activityPlanContent);
+            }
+        }
+
+        // 3. 更新步骤表（先删除再插入）
+        //仅当 steps 不为 null 时才执行全量替换逻辑，防止误删步骤
+        if (activityPlanDTO.getSteps() != null) {
+            List<Long> ids = new ArrayList<>();
+            ids.add(planId);
+            // 删除原有步骤
+            activityStepMapper.deleteByActivityIds(ids);
+
+            //批量复制
+            if (activityPlanDTO.getSteps() != null && !activityPlanDTO.getSteps().isEmpty()) {
+                ArrayList<ActivityStep> activitySteps = new ArrayList<>();
+                for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
+                    ActivityStep activityStep = new ActivityStep();
+                    BeanUtils.copyProperties(activityStepDTO, activityStep);
+                    //设置关联主表外键和时间用户
+                    activityStep.setActivityPlanId(planId);
+                    activityStep.setCreateTime(LocalDateTime.now());
+                    activityStep.setUpdateTime(LocalDateTime.now());
+                    activityStep.setCreateUser(BaseContext.getCurrentId());
+                    activityStep.setUpdateUser(BaseContext.getCurrentId());
+                    //加入List
+                    activitySteps.add(activityStep);
+                }
+                //批量写入活动步骤表
+                int rows = activityStepMapper.batchInsert(activitySteps);
+                //检查批量插入数量是否与steps数量一样
+                if (rows != activitySteps.size()) {
+                    throw new IllegalStateException("步骤批量写入数量不一致");
+                }
+            }
+        }
+    }
+
+    /**
+     * 修改状态
+     *
+     * @param id
+     * @param status
+     * @return
+     * @date:
+     **/
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void changeStatus(Long id, Integer status) {
+        if (id == null) {
+            throw new BaseException("活动方案ID不能为空");
+        }
+        ActivityPlan plan = activityPlanMapper.selectById(id);
+        if (plan == null) {
+            throw new BaseException("活动方案不存在");
+        }
+
+        ActivityPlan update = new ActivityPlan();
+        update.setId(id);
+        update.setStatus(status);
+        int rows = activityPlanMapper.update(update);
+        if (rows == 0) {
+            throw new BaseException("状态更新失败");
+        }
     }
 }

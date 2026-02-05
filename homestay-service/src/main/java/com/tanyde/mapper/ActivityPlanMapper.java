@@ -45,8 +45,19 @@ public interface ActivityPlanMapper {
 
     /**
      * 分页查询
+     *
      * @param dto
      * @return
      **/
     Page<ActivityPlan> pageQuery(ActivityPlanPageQueryDTO dto);
+
+    /**
+     * 更新活动方案
+     *
+     * @param activityPlan
+     * @return
+     * @date:
+     **/
+    @AutoFill(value=OperationType.UPDATE)
+    int update(ActivityPlan activityPlan);
 }

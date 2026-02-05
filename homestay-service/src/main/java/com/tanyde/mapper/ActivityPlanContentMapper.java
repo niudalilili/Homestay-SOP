@@ -20,7 +20,7 @@ public interface ActivityPlanContentMapper {
      * @author TanyDe
      * @create 2026/1/27
      **/
-    @AutoFill(value= OperationType.INSERT)
+    @AutoFill(value = OperationType.INSERT)
     void insert(ActivityPlanContent activityPlanContent);
 
     /**
@@ -40,4 +40,14 @@ public interface ActivityPlanContentMapper {
      * @return
      **/
     ActivityPlanContent selectByPlanId(Long id);
+
+    /**
+     * 更新
+     *
+     * @param activityPlanContent
+     * @return
+     * @date:
+     **/
+    @AutoFill(value=OperationType.UPDATE)
+    void update(ActivityPlanContent activityPlanContent);
 }

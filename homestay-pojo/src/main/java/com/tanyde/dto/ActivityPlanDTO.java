@@ -15,6 +15,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ActivityPlanDTO implements Serializable {
+    private static final long serialVersionUID = 1L; // 修复序列化ID缺失
+
+    private Long id;  // 添加这个字段，用于更新操作
 
     private String planName;
 

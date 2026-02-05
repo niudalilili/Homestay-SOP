@@ -17,6 +17,40 @@
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
+    <update id="update">
+        update activity_plan
+        <set>
+            <if test="planName!=null and planName!=''">
+                plan_name=#{planName},
+            </if>
+            <if test="ageGroup!=null and ageGroup!=''">
+                age_group=#{ageGroup},
+            </if>
+            <if test="activityCategory!=null and activityCategory!=''">
+                activity_category=#{activityCategory},
+            </if>
+            <if test="season!=null">
+                season=#{season},
+            </if>
+            <if test="duration!=null">
+                duration=#{duration},
+            </if>
+            <if test="scene!=null">
+                scene=#{scene},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="updateTime!=null">
+                update_time=#{updateTime},
+            </if>
+            <if test="updateUser!=null">
+                update_user=#{updateUser},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
     <delete id="deleteByIds">
         delete from activity_plan
         where id in
