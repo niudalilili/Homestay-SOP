@@ -7,7 +7,10 @@ import lombok.Data;
 public class EmployeePageQueryDTO {
     //员工姓名
     private String name;
-
+    //员工角色
+    private String role;
+    //员工账号
+    private String username;
     //页码
     private int page;
 

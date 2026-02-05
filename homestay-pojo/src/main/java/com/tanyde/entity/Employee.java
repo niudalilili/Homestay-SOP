@@ -26,6 +26,8 @@ public class Employee implements Serializable {
 
     private Integer status;
 
+    private String role;
+
     private LocalDateTime createTime;
 
     private  LocalDateTime updateTime;

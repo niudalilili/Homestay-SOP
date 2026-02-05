@@ -1,0 +1,57 @@
+package com.tanyde.service.Impl;
+
+import cn.dev33.satoken.stp.StpInterface;
+import com.tanyde.entity.Employee;
+import com.tanyde.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 自定义权限验证接口扩展
+ **/
+@Component
+public class StpInterfaceImpl implements StpInterface {
+    @Autowired
+    private EmployeeService employeeService;
+
+    /**
+     * 返回一个账号拥有权限码集合
+     *
+     * @param loginId
+     * @param loginType
+     * @return list
+     **/
+    @Override
+    public List<String> getPermissionList(Object loginId, String loginType) {
+        //此处用于细粒度权限控制，暂时只使用角色控制
+        //后续需要可在此处扩展
+        return new ArrayList<>();
+    }
+
+    /**
+     * 返回一个账号拥有的角色标识集合
+     *
+     * @param loginId
+     * @param loginType
+     * @return
+     * @date:
+     **/
+    @Override
+    public List<String> getRoleList(Object loginId, String loginType) {
+        Long userId=Long.valueOf(loginId.toString());
+        //调用Service查询用户信息
+        //TODO:此处可以使用缓存避免每次鉴权都要查库
+        Employee employee=employeeService.getById(userId);
+        //无此用户或者未配置权限则抛出异常
+        if(employee ==null ){
+            throw new RuntimeException("用户不存在");
+        }
+        if(employee.getRole()==null){
+            throw new RuntimeException("用户未配置权限");
+        }
+        return List.of(employee.getRole());
+    }
+}

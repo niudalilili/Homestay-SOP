@@ -3,6 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tanyde.mapper.EmployeeMapper">
 
+    <insert id="insert">
+        insert into employee(
+            id, username, name,
+            password, status,role,
+            create_time, update_time, create_user, update_user
+        ) VALUES(
+                 #{id}, #{username}, #{name},
+                 #{password}, #{status},#{role},
+                 #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
 
     <update id="update">
         update employee
@@ -18,10 +28,19 @@
     </update>
 
     <select id="pageQuery" resultType="com.tanyde.entity.Employee">
-        select * from employee
+        select id, username, name,
+               password, status, role,
+               create_time, update_time, create_user, update_user
+        from employee
         <where>
             <if test="name != null and name!='' ">
                 and name like concat('%',#{name},'%')
+            </if>
+            <if test="role != null and role!='' ">
+                and role=#{role}
+            </if>
+            <if test="username != null and username!='' ">
+                and username=#{username}
             </if>
         </where>
         order by create_time desc

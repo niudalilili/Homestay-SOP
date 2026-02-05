@@ -33,9 +33,6 @@ public interface EmployeeMapper {
      * @author TanyDe
      * @create 2026/1/4
      **/
-    @Insert("insert into employee(username, name, password, status, create_time, update_time, create_user, update_user) "+
-    "values "+
-    "(#{username}, #{name}, #{password}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
     @AutoFill(value= OperationType.INSERT)
     void insert(Employee employee);
 

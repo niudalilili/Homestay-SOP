@@ -12,6 +12,10 @@ public class EmployeeDTO implements Serializable {
 
     private String username;
 
+    private String role;
+
+    private String password;
+
     private String name;
 
 }
