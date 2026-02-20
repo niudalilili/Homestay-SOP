@@ -21,7 +21,9 @@ public class ActivityPlanDTO implements Serializable {
 
     private String planName;
 
-    private String ageGroup;
+    private Integer minAge;
+
+    private Integer maxAge;
 
     private String activityCategory;
 
@@ -30,6 +32,8 @@ public class ActivityPlanDTO implements Serializable {
     private Integer duration;
 
     private Integer scene;
+
+    private Integer status;
 
     private ActivityPlanContentDTO content;
 

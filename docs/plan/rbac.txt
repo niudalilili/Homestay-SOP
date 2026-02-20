@@ -1,0 +1,369 @@
+ SaToken RBAC改造计划
+
+ 上下文
+
+ 当前项目使用SaToken进行权限控制，但实现存在以下问题：
+
+ 当前SaToken实现的问题分析
+
+ 1. 非标准RBAC实现：当前权限模型是简单的单角色字符串存储，缺乏标准的RBAC（基于角色的访问控制）要素：
+   - 没有角色表、权限表、菜单表等实体定义
+   - 角色直接存储在employee表的role字段中，为简单的字符串类型
+   - 缺乏角色-权限、用户-角色、角色-菜单等多对多关系
+ 2. 权限控制不完整：
+   - 只有EmployeeController使用@SaCheckRole("admin")注解
+   - ActivityPlanController中所有接口公开（仅受全局登录拦截器保护）
+   - 用户端（user）框架预留但未实现任何权限控制
+ 3. 权限粒度不足：
+   - StpInterfaceImpl.getPermissionList()返回空列表，未实现细粒度权限控制
+   - 只有角色级别的控制，缺乏权限级别的控制
+ 4. 硬编码逻辑：
+   - StpInterfaceImpl中硬编码了admin账号的特殊处理
+   - 角色管理通过员工管理界面直接设置字符串值，缺乏规范性
+ 5. 配置混乱：
+   - SaTokenConfigure配置类中的拦截器被注释掉，实际生效的拦截器在WebMvcConfiguration中
+   - 配置分散，缺乏统一管理
+ 6. 缺乏权限管理功能：
+   - 没有角色管理、权限管理、菜单管理接口
+   - 无法动态分配权限和角色
+
+ RBAC标准要求
+
+ 标准的RBAC（基于角色的访问控制）应包含以下核心要素：
+
+ 1. 用户（User）：系统的使用者
+ 2. 角色（Role）：权限的集合
+ 3. 权限（Permission）：具体的操作权限
+ 4. 资源/菜单（Menu）：系统功能模块
+ 5. 关系映射：用户-角色、角色-权限、权限-菜单等多对多关系
+
+ 项目现状
+
+ - 技术栈：Spring Boot 3 + SaToken 1.44.0 + MyBatis
+ - 当前权限模型：简单的单角色字符串模型
+ - 数据库：只有employee表包含role字段，无其他权限相关表
+ - 代码基础：已集成SaToken框架，StpInterfaceImpl预留了权限扩展点
+
+ 用户决策确认
+
+ 1. RBAC级别：基础RBAC0（用户-角色-权限基础模型）
+ 2. 数据迁移：全新开始（不迁移现有role字段数据）
+ 3. 前端权限控制：只需后端API权限（前端暂不集成）
+ 4. 权限编码规范：模块:操作格式（如employee:add）
+ 5. 默认角色：预定义管理员(admin)和普通员工(employee)角色
+ 6. 菜单管理：暂不需要（只实现接口权限控制）
+ 7. Admin特殊逻辑：完全RBAC化（取消硬编码，通过角色权限表管理）
+ 8. Employee.role字段：立即移除（完全使用user_role关联表）
+
+ 实施计划
+
+ 实施顺序说明
+
+ 1. 阶段一（数据库与实体）：必须最先完成，为后续提供数据基础
+ 2. 阶段二（服务层）：依赖阶段一完成，实现核心业务逻辑
+ 3. 阶段三（控制器层）：依赖阶段二完成，提供API接口
+ 4. 阶段四（接口层）：可并行开发，提供基础权限查询
+ 5. 阶段五（测试验证）：贯穿整个开发过程
+
+ 关键依赖关系
+
+ - 权限验证功能依赖StpInterfaceImpl更新
+ - 控制器权限注解依赖权限编码设计
+ - 初始数据脚本依赖表结构创建
+ - 前端集成（如有）依赖权限查询接口
+
+ 阶段一：数据库设计与实体创建
+
+ 1.1 创建RBAC相关表结构
+
+ # 角色表
+ role
+ - id (主键)
+ - name (角色名称)
+ - code (角色编码，唯一，如：admin、employee)
+ - description (描述)
+ - status (状态：0禁用，1启用)
+ - create_time, update_time, create_user, update_user
+
+ # 权限表（简化设计，无需菜单管理）
+ permission
+ - id (主键)
+ - name (权限名称，如：新增员工)
+ - code (权限编码，唯一，格式：模块:操作，如employee:add)
+ - description (权限描述)
+ - status (状态：0禁用，1启用)
+ - create_time, update_time, create_user, update_user
+
+ # 角色-权限关联表
+ role_permission
+ - id (主键)
+ - role_id
+ - permission_id
+ - create_time
+
+ # 用户-角色关联表
+ user_role
+ - id (主键)
+ - user_id (对应employee表的id)
+ - role_id
+ - create_time
+
+ 1.2 创建实体类和Mapper
+
+ - Role实体类及Mapper
+ - Permission实体类及Mapper
+ - RolePermission实体类及Mapper
+ - UserRole实体类及Mapper
+ - 更新Employee实体，移除role字段（角色通过关联表管理）
+
+ 1.3 创建DTO和VO
+
+ - RoleDTO、RolePageQueryDTO、RoleVO
+ - PermissionDTO、PermissionTreeVO、PermissionVO
+ - UserRoleDTO、RolePermissionDTO
+
+ 阶段二：基础服务层实现
+
+ 2.1 角色管理服务
+
+ - RoleService接口及RoleServiceImpl实现
+ - 包含角色的CRUD、启用禁用、分配权限等功能
+
+ 2.2 权限管理服务
+
+ - PermissionService接口及PermissionServiceImpl实现
+ - 包含权限的CRUD、树形结构查询、权限树构建等功能
+
+ 2.3 用户角色服务
+
+ - UserRoleService接口及UserRoleServiceImpl实现
+ - 用户角色分配、批量分配、查询用户角色等功能
+
+ 2.4 更新StpInterfaceImpl实现
+
+ - 重写getRoleList()：从user_role关联表查询用户角色，取消admin硬编码逻辑
+ - 实现getPermissionList()：根据用户角色查询所有权限编码
+ - 添加缓存支持，避免频繁查询数据库
+ - 完全RBAC化，所有账号（包括admin）都通过角色权限表管理
+
+ 阶段三：控制器层实现
+
+ 3.1 角色管理控制器
+
+ - RoleController：角色管理的REST接口
+ - 使用@SaCheckPermission注解进行权限控制
+
+ 3.2 权限管理控制器
+
+ - PermissionController：权限管理的REST接口
+ - 提供权限树查询接口
+
+ 3.3 用户角色分配控制器
+
+ - UserRoleController：用户角色分配接口
+
+ 3.4 更新现有控制器权限注解
+
+ - 将EmployeeController中的@SaCheckRole("admin")改为@SaCheckPermission注解
+ - 为ActivityPlanController添加适当的权限注解
+ - 规划用户端控制器的权限注解
+
+ 阶段四：权限数据接口（简化）
+
+ 4.1 基础权限查询接口
+
+ - 提供当前用户权限列表接口（返回权限编码列表）
+ - 可选：提供用户角色列表接口
+
+ 4.2 预留扩展点
+
+ - 接口设计考虑未来前端集成需求
+ - 权限数据结构包含类型字段，便于后续扩展
+
+ 阶段五：测试与验证
+
+ 5.1 单元测试
+
+ - 编写角色、权限、用户角色服务的单元测试
+ - 测试StpInterfaceImpl的权限查询逻辑
+ - 测试权限编码解析和验证逻辑
+
+ 5.2 集成测试
+
+ - 测试权限注解的实际效果：不同角色访问受保护接口
+ - 测试角色权限分配流程：创建角色→分配权限→分配用户→验证访问
+ - 测试缓存机制：权限变更后的缓存失效
+ - 测试异常处理：无权限访问时的异常返回
+
+ 5.3 初始数据脚本
+
+ - 编写初始化SQL脚本，创建默认角色和权限
+ - 预定义管理员(admin)和普通员工(employee)角色
+ - 配置默认权限分配：admin角色拥有所有权限，employee角色拥有查询权限
+ - 提供测试数据脚本，便于开发和测试
+
+ 关键文件路径
+
+ 需要修改的现有文件
+
+ 1. homestay-pojo/src/main/java/com/tanyde/entity/Employee.java - 移除role字段
+ 2. homestay-pojo/src/main/java/com/tanyde/dto/EmployeeDTO.java - 移除role字段
+ 3. homestay-pojo/src/main/java/com/tanyde/dto/EmployeePageQueryDTO.java - 移除role字段
+ 4. homestay-service/src/main/java/com/tanyde/service/Impl/StpInterfaceImpl.java - 重写权限查询逻辑
+ 5. homestay-service/src/main/java/com/tanyde/controller/admin/EmployeeController.java - 更新权限注解
+ 6. homestay-service/src/main/resources/mapper/EmployeeMapper.xml - 更新SQL，移除role字段相关
+
+ 需要创建的新文件
+
+ 1. 实体类：Role.java、Permission.java、RolePermission.java、UserRole.java
+ 2. Mapper接口：RoleMapper.java、PermissionMapper.java、RolePermissionMapper.java、UserRoleMapper.java
+ 3. XML映射文件：对应的*Mapper.xml
+ 4. Service接口和实现：RoleService、PermissionService、UserRoleService
+ 5. 控制器：RoleController.java、PermissionController.java、UserRoleController.java
+ 6. DTO/VO类：相关的数据传输对象
+
+ 技术细节
+
+ SaToken权限注解使用
+
+ // 角色检查（不推荐，使用权限检查更灵活）
+ @SaCheckRole("admin")
+
+ // 权限检查（推荐）
+ @SaCheckPermission("employee:add")
+ @SaCheckPermission("employee:query")
+ @SaCheckPermission("activity:add")
+
+ 权限编码规范设计
+
+ 编码格式：模块:操作
+
+ - 模块：表示功能模块，如employee、activity、system等
+ - 操作：表示具体操作，如add、update、delete、query、status等
+
+ 具体权限编码列表
+
+ 员工管理模块 (employee)
+ - employee:add - 新增员工（对应save方法）
+ - employee:query - 查询员工（对应page、getById方法）
+ - employee:update - 编辑员工信息（对应update方法）
+ - employee:status - 启用禁用员工账号（对应startOrStop方法）
+ - employee:password - 编辑员工密码（对应editPassword方法）
+ - employee:delete - 删除员工（对应delete方法）
+
+ 活动管理模块 (activity)
+ - activity:add - 新增活动方案（对应save方法）
+ - activity:query - 查询活动方案（对应page、selectById、stats方法）
+ - activity:update - 更新活动方案（对应update方法）
+ - activity:status - 修改活动状态（对应changeStatus方法）
+ - activity:delete - 删除活动方案（对应deleteById方法）
+
+ 系统管理模块 (system)
+ - system:role - 角色管理
+ - system:permission - 权限管理
+ - system:userRole - 用户角色分配
+
+ 权限注解使用示例
+
+ // EmployeeController
+ @SaCheckPermission("employee:add")
+ public Result save(@RequestBody EmployeeDTO employeeDTO)
+
+ @SaCheckPermission("employee:query")
+ public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO)
+
+ // ActivityPlanController
+ @SaCheckPermission("activity:add")
+ public Result save(@RequestBody ActivityPlanDTO activityPlanDTO)
+
+ @SaCheckPermission("activity:query")
+ public Result<PageResult> page(ActivityPlanPageQueryDTO activityPlanPageQueryDTO)
+
+ 缓存策略
+
+ - 用户权限列表缓存：用户登录时查询权限并缓存，减少每次鉴权的数据库查询
+ - 角色权限关系缓存：缓存角色-权限映射关系，提高权限验证速度
+ - 使用SaToken自带的缓存机制，可配置缓存时间
+ - 考虑缓存失效策略：权限变更时清除相关缓存
+
+ 初始数据考虑
+
+ - 不迁移现有employee.role字段数据（全新开始）
+ - 创建默认角色：admin（管理员）、employee（普通员工）
+ - 创建基础权限：员工管理、活动管理等模块的CRUD权限
+ - 为admin角色分配所有权限，为employee角色分配基础查询权限
+ - admin账号不再有特殊硬编码逻辑，通过分配admin角色获得权限
+ - 提供初始化SQL脚本，创建默认数据
+
+ 兼容性处理
+
+ 代码修改清单
+
+ 1. Employee实体相关：
+   - 移除Employee.java中的role字段
+   - 移除EmployeeDTO.java中的role字段
+   - 移除EmployeePageQueryDTO.java中的role字段
+   - 更新EmployeeMapper.xml，移除所有role字段的SQL引用
+ 2. 业务逻辑更新：
+   - 更新员工管理服务，角色分配改用UserRoleService
+   - 更新员工查询逻辑，角色查询改用关联表查询
+   - 移除对admin账号的特殊硬编码逻辑
+ 3. 权限注解迁移：
+   - 将EmployeeController中的@SaCheckRole("admin")改为@SaCheckPermission注解
+   - 为ActivityPlanController添加适当的权限注解
+   - 设计权限编码规范，统一权限命名
+ 4. 配置优化：
+   - 清理SaTokenConfigure中的注释代码
+   - 优化WebMvcConfiguration中的拦截器配置
+   - 统一SaToken配置管理
+
+ 验证方案
+
+ 功能验证
+
+ 1. 创建角色并分配权限
+ 2. 为用户分配角色
+ 3. 测试受权限保护的接口访问
+ 4. 验证权限注解的正确性
+
+ 性能验证
+
+ 1. 权限查询性能测试
+ 2. 缓存效果验证
+ 3. 并发访问测试
+
+ 兼容性验证
+
+ 1. 现有接口的向后兼容性
+ 2. 数据迁移的正确性
+ 3. 管理员账号的特殊处理
+
+ 风险与缓解
+
+ 风险1：数据库迁移数据丢失
+
+ - 缓解：备份现有数据，提供回滚脚本
+ - 测试环境充分验证迁移脚本
+
+ 风险2：权限控制过严导致现有功能不可用
+
+ - 缓解：分阶段实施，先添加权限注解但不启用严格检查
+ - 提供权限开关配置
+
+ 风险3：性能问题
+
+ - 缓解：实现合理的缓存策略
+ - 优化数据库查询，使用索引
+
+ 风险4：前端兼容性问题
+
+ - 缓解：提供兼容接口，逐步过渡
+ - 前端权限控制作为可选阶段
+
+ 后续优化方向
+
+ 1. 数据权限：基于组织架构的数据行级别权限控制
+ 2. 操作日志：记录用户操作日志，便于审计
+ 3. 单点登录：集成SSO单点登录
+ 4. 多租户：支持多租户权限隔离
+ 5. 权限模板：预定义角色权限模板，快速创建角色

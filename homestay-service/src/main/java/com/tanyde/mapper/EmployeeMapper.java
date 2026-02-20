@@ -6,6 +6,7 @@ import com.tanyde.annotation.AutoFill;
 import com.tanyde.dto.EmployeePageQueryDTO;
 import com.tanyde.entity.Employee;
 import com.tanyde.enumeration.OperationType;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -67,4 +68,18 @@ public interface EmployeeMapper {
      **/
     @Select("select * from employee where id=#{id}")
     Employee getById(Long id);
+
+    /**
+     * 根据id删除员工
+     * @param id
+     */
+    @Delete("delete from employee where id = #{id}")
+    void deleteById(Long id);
+
+    /**
+     * 统计员工数量
+     * @return
+     */
+    @Select("select count(*) from employee")
+    Integer count();
 }

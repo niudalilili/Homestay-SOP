@@ -24,5 +24,8 @@ public class MessageConstant {
     public static final String DISH_BE_RELATED_BY_SETMEAL = "当前菜品关联了套餐,不能删除";
     public static final String ORDER_STATUS_ERROR = "订单状态错误";
     public static final String ORDER_NOT_FOUND = "订单不存在";
+    public static final String ADMIN_DELETE_DENIED = "超级管理员账号不能删除";
+    public static final String SELF_DELETE_DENIED = "当前登录用户不能删除自己";
+    public static final String LAST_USER_DELETE_DENIED = "系统中必须至少保留一个用户";
 
 }

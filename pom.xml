@@ -26,15 +26,15 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <lombook>1.18.20</lombook>
+        <lombook>1.18.32</lombook>
         <druid>1.2.1</druid>
-        <pagehelper>1.3.0</pagehelper>
-        <knife4j>3.0.2</knife4j>
+        <pagehelper>1.4.7</pagehelper>
+        <knife4j>4.5.0</knife4j>
+        <springdoc-openapi>2.8.9</springdoc-openapi>
         <hutool.version>5.8.11</hutool.version>
         <mysql.version>8.0.33</mysql.version>
         <mybatis.spring>3.0.3</mybatis.spring>
         <aspectj>1.9.4</aspectj>
-        <jjwt>0.12.3</jjwt>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
     </properties>
@@ -94,9 +94,17 @@
 
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>${knife4j}</version>
             </dependency>
+
+            <!-- springdoc (覆盖 knife4j 版本) -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi}</version>
+            </dependency>
+
 
 
             <dependency>
@@ -116,6 +124,13 @@
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+                <version>4.8.174</version>
+            </dependency>
+
 
 
         </dependencies>

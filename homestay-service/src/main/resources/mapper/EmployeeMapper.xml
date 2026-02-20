@@ -20,6 +20,7 @@
             <if test="name != null">name=#{name},</if>
             <if test="username != null">username=#{username},</if>
             <if test="password != null">password=#{password},</if>
+            <if test="role != null">role=#{role},</if>
             <if test="status != null">status=#{status},</if>
             <if test="updateTime != null">update_time= #{updateTime},</if>
             <if test="updateUser != null">update_user= #{updateUser},</if>
@@ -40,10 +41,10 @@
                 and role=#{role}
             </if>
             <if test="username != null and username!='' ">
-                and username=#{username}
+                and username like concat('%',#{username},'%')
             </if>
         </where>
-        order by create_time desc
+        order by create_time asc
     </select>
 
 

@@ -20,7 +20,9 @@ public class ActivityPlan implements Serializable {
 
     private String planName;
 
-    private String ageGroup;
+    private Integer minAge;
+
+    private Integer maxAge;
 
     private String activityCategory;
 

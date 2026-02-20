@@ -6,6 +6,7 @@ import com.tanyde.result.PageResult;
 import com.tanyde.service.Impl.ActivityPlanServiceImpl;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ActivityPlanService {
 
@@ -65,4 +66,11 @@ public interface ActivityPlanService {
      * @date:
      **/
     void changeStatus(Long id, Integer status);
+
+    /**
+     * 仪表盘统计数据
+     *
+     * @return 包含 totalPlans/totalEmployees/monthlyNewPlans/systemVisits 的键值对
+     */
+    Map<String, Object> getDashboardStats();
 }

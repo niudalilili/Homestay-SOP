@@ -8,8 +8,10 @@ import com.tanyde.entity.ActivityPlan;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Mapper
 public interface ActivityPlanMapper {
@@ -60,4 +62,20 @@ public interface ActivityPlanMapper {
      **/
     @AutoFill(value=OperationType.UPDATE)
     int update(ActivityPlan activityPlan);
+
+    /**
+     * 统计活动方案总数
+     *
+     * @return 总数量
+     */
+    Integer countAll();
+
+    /**
+     * 按创建时间范围统计活动方案数量
+     *
+     * @param startTime 起始时间（包含）
+     * @param endTime 结束时间（不包含）
+     * @return 数量
+     */
+    Integer countByCreateTimeRange(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 }

@@ -1,9 +1,9 @@
 package com.tanyde.service.Impl;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.tanyde.context.BaseContext;
 import com.tanyde.dto.ActivityPlanContentDTO;
 import com.tanyde.dto.ActivityPlanDTO;
 import com.tanyde.dto.ActivityPlanPageQueryDTO;
@@ -14,6 +14,7 @@ import com.tanyde.entity.ActivityStep;
 import com.tanyde.mapper.ActivityPlanContentMapper;
 import com.tanyde.mapper.ActivityPlanMapper;
 import com.tanyde.mapper.ActivityStepMapper;
+import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.enumeration.ActivityStatus;
 import com.tanyde.exception.BaseException;
@@ -25,8 +26,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class ActivityPlanServiceImpl implements ActivityPlanService {
@@ -36,6 +40,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     private ActivityPlanContentMapper activityPlanContentMapper;
     @Autowired
     private ActivityStepMapper activityStepMapper;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     /**
      * 保存活动方案
@@ -86,8 +92,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
             activityStep.setActivityPlanId(planId);
             activityStep.setCreateTime(LocalDateTime.now());
             activityStep.setUpdateTime(LocalDateTime.now());
-            activityStep.setCreateUser(BaseContext.getCurrentId());
-            activityStep.setUpdateUser(BaseContext.getCurrentId());
+            activityStep.setCreateUser(StpUtil.getLoginIdAsLong());
+            activityStep.setUpdateUser(StpUtil.getLoginIdAsLong());
             //加入List
             activitySteps.add(activityStep);
         }
@@ -178,6 +184,27 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     }
 
     /**
+     * 仪表盘统计数据
+     */
+    @Override
+    public Map<String, Object> getDashboardStats() {
+        int totalPlans = activityPlanMapper.countAll();
+        Integer totalEmployees = employeeMapper.count();
+        LocalDate today = LocalDate.now();
+        LocalDate firstDay = today.withDayOfMonth(1);
+        LocalDateTime startTime = firstDay.atStartOfDay();
+        LocalDateTime endTime = firstDay.plusMonths(1).atStartOfDay();
+        Integer monthlyNewPlans = activityPlanMapper.countByCreateTimeRange(startTime, endTime);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalPlans", totalPlans);
+        stats.put("totalEmployees", totalEmployees == null ? 0 : totalEmployees);
+        stats.put("monthlyNewPlans", monthlyNewPlans == null ? 0 : monthlyNewPlans);
+        stats.put("systemVisits", 0);
+        return stats;
+    }
+
+    /**
      * 更新活动方案
      *
      * @param activityPlanDTO
@@ -241,8 +268,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
                     activityStep.setActivityPlanId(planId);
                     activityStep.setCreateTime(LocalDateTime.now());
                     activityStep.setUpdateTime(LocalDateTime.now());
-                    activityStep.setCreateUser(BaseContext.getCurrentId());
-                    activityStep.setUpdateUser(BaseContext.getCurrentId());
+                    activityStep.setCreateUser(StpUtil.getLoginIdAsLong());
+                    activityStep.setUpdateUser(StpUtil.getLoginIdAsLong());
                     //加入List
                     activitySteps.add(activityStep);
                 }

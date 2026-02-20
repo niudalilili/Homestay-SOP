@@ -2,19 +2,17 @@ package com.tanyde.controller.admin;
 
 import com.tanyde.dto.ActivityPlanDTO;
 import com.tanyde.dto.ActivityPlanPageQueryDTO;
-import com.tanyde.dto.EmployeeDTO;
-import com.tanyde.entity.ActivityPlan;
 import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import com.tanyde.service.ActivityPlanService;
-import com.tanyde.service.EmployeeService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 方案管理
@@ -24,6 +22,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/admin/activityPlan")
+@Tag(name = "方案管理", description = "用户相关接口")
 @Slf4j
 public class ActivityPlanController {
 
@@ -40,7 +39,7 @@ public class ActivityPlanController {
      * @create 2026/1/27
      **/
     @PostMapping
-    @ApiOperation("新增活动方案")
+    @Operation(summary = "新增活动方案")
     public Result save(@RequestBody ActivityPlanDTO activityPlanDTO) {
         log.info("新增活动方案:{}", activityPlanDTO);
         activityPlanService.save(activityPlanDTO);
@@ -56,7 +55,7 @@ public class ActivityPlanController {
      * @create 2026/1/31
      **/
     @DeleteMapping("/batch")
-    @ApiOperation("根据ids删除活动方案")
+    @Operation(summary = "根据ids删除活动方案")
     public Result deleteById(@RequestBody List<Long> ids) {
         log.info("根据id删除活动方案:{}", ids);
         activityPlanService.deleteByIds(ids);
@@ -72,7 +71,7 @@ public class ActivityPlanController {
      * @create 2026/1/31
      **/
     @GetMapping("/{id}")
-    @ApiOperation("根据id查询活动方案")
+    @Operation(summary = "根据id查询活动方案")
     public Result<ActivityPlanDTO> selectById(@PathVariable Long id) {
         ActivityPlanDTO activityPlanDTO = activityPlanService.selectById(id);
         log.info("根据id:{}查询活动方案:{}", id, activityPlanDTO);
@@ -85,22 +84,31 @@ public class ActivityPlanController {
      * @param activityPlanPageQueryDTO
      **/
     @GetMapping("/page")
-    @ApiOperation("分页查询活动方案")
-    public Result<PageResult> page(@RequestBody ActivityPlanPageQueryDTO activityPlanPageQueryDTO) {
+    @Operation(summary = "分页查询活动方案")
+    public Result<PageResult> page(ActivityPlanPageQueryDTO activityPlanPageQueryDTO) {
         PageResult pageResult = activityPlanService.pageQuery(activityPlanPageQueryDTO);
         log.info("分页查询活动方案:{}", pageResult);
         return Result.success(pageResult);
     }
 
     /**
+     * 仪表盘统计数据
+     *
+     * @return 统计结果
+     */
+    @GetMapping("/stats")
+    @Operation(summary = "仪表盘统计数据")
+    public Result<Map<String, Object>> stats() {
+        return Result.success(activityPlanService.getDashboardStats());
+    }
+
+    /**
      * 更新活动方案
      *
      * @param activityPlanDTO
-     * @return
-     * @date:
      **/
     @PutMapping("/update")
-    @ApiOperation("更新活动方案")
+    @Operation(summary = "更新活动方案")
     public Result update(@RequestBody ActivityPlanDTO activityPlanDTO) {
         activityPlanService.update(activityPlanDTO);
         log.info("更新活动方案:{}", activityPlanDTO);
@@ -112,11 +120,9 @@ public class ActivityPlanController {
      *
      * @param status
      * @param id
-     * @return
-     * @date:
      **/
     @PutMapping("/status/{status}")
-    @ApiOperation("更新活动方案状态")
+    @Operation(summary = "更新活动方案状态")
     public Result changeStatus(@PathVariable Integer status, @RequestParam Long id) {
         activityPlanService.changeStatus(id, status);
         return Result.success();

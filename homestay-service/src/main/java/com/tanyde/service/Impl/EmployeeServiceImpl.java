@@ -1,6 +1,7 @@
 package com.tanyde.service.Impl;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.tanyde.constant.MessageConstant;
@@ -11,14 +12,10 @@ import com.tanyde.dto.EmployeeLoginDTO;
 import com.tanyde.dto.EmployeePageQueryDTO;
 import com.tanyde.dto.PasswordEditDTO;
 import com.tanyde.entity.Employee;
-import com.tanyde.exception.AccountLockedException;
-import com.tanyde.exception.AccountNotFoundException;
-import com.tanyde.exception.PasswordEditFailedException;
-import com.tanyde.exception.PasswordErrorException;
+import com.tanyde.exception.*;
 import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.EmployeeService;
-import io.jsonwebtoken.security.Password;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,6 +78,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO,employee);
+
+        //密码加密
+        if (employee.getPassword() != null) {
+            employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
+        }
+
         //设置账号状态
         employee.setStatus(StatusConstant.ENABLE);
 
@@ -174,5 +177,38 @@ public class EmployeeServiceImpl implements EmployeeService {
             //抛出密码修改错误异常
             throw new PasswordEditFailedException(MessageConstant.PASSWORD_EDIT_FAILED);
         }
+    }
+
+    /**
+     * 删除员工
+     * @param id
+     */
+    @Override
+    public void deleteById(Long id) {
+        // 1. 查询员工信息
+        Employee employee = employeeMapper.getById(id);
+        if (employee == null) {
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
+
+        // 2. 校验：不能删除admin账号
+        if ("admin".equals(employee.getUsername())) {
+            throw new BaseException(MessageConstant.ADMIN_DELETE_DENIED);
+        }
+
+        // 3. 校验：不能删除当前登录用户
+        Long currentId = StpUtil.getLoginIdAsLong();
+        if (id.equals(currentId)) {
+            throw new BaseException(MessageConstant.SELF_DELETE_DENIED);
+        }
+
+        // 4. 校验：不能删除最后一个用户
+        Integer count = employeeMapper.count();
+        if (count <= 1) {
+            throw new BaseException(MessageConstant.LAST_USER_DELETE_DENIED);
+        }
+
+        // 5. 执行删除
+        employeeMapper.deleteById(id);
     }
 }

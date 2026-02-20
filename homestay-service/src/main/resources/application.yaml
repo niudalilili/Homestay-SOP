@@ -28,18 +28,6 @@ mybatis:
     #开启驼峰命名
     map-underscore-to-camel-case: true
 
-homestay:
-  jwt:
-    # 设置jwt签名加密时使用的秘钥
-    admin-secret-key:  ittanydeittanydeittanydeittanydeaaa
-    # 设置jwt过期时间（2.9亿年awa）
-    admin-ttl: 9223372036854775
-    # 设置前端传递过来的令牌名称
-    admin-token-name: token
-    user-secret-key: ittanydeittanydeittanydeittanydeaaa
-    user-ttl: 9223372036854775
-    user-token-name: authentication
-
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
   # token 名称（同时也是 cookie 名称）
@@ -55,4 +43,9 @@ sa-token:
   # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
   token-style: uuid
   # 是否输出操作日志
-  is-log: false
+  is-log: true
+
+knife4j:
+  enable: false
+  setting:
+    language: zh_cn

@@ -76,4 +76,10 @@ public interface EmployeeService {
      * @create 2026/1/4
      **/
     void editPassword(PasswordEditDTO passwordEditDTO);
+
+    /**
+     * 删除员工
+     * @param id
+     */
+    void deleteById(Long id);
 }

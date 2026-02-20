@@ -1,20 +1,22 @@
 package com.tanyde.config;
 
 
+import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.stp.StpUtil;
+
 import com.tanyde.json.JacksonObjectMapper;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 
 import java.util.List;
 
@@ -28,56 +30,45 @@ import java.util.List;
  **/
 @Configuration
 @Slf4j
-public class WebMvcConfiguration extends WebMvcConfigurationSupport {
-    /**
-     * 通过knief4j生成接口文档
-     *
-     * @return springfox.documentation.spring.web.plugins.Docket
-     * @author TanyDe
-     * @create 2026/1/4
-     **/
-    @Bean
-    public Docket docket1(){
-        ApiInfo apiInfo=new ApiInfoBuilder()
-                .title("自然教育民宿赋能系统接口文档")
-                .version("1.0")
-                .description("自然教育民宿赋能系统接口文档")
-                .build();
-        Docket docket=new Docket(DocumentationType.SWAGGER_2)
-                .groupName("管理端接口")
-                .apiInfo(apiInfo)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.tanyde.controller.admin"))
-                .paths(PathSelectors.any())
-                .build();
-        return docket;
-    }
+public class WebMvcConfiguration implements WebMvcConfigurer {
 
-    @Bean
-    public Docket docket2(){
-        ApiInfo apiInfo=new ApiInfoBuilder()
-                .title("自然教育民宿赋能系统接口文档")
-                .version("1.0")
-                .description("自然教育民宿赋能系统接口文档")
-                .build();
-        Docket docket=new Docket(DocumentationType.SWAGGER_2)
-                .groupName("用户端接口")
-                .apiInfo(apiInfo)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.tanyde.controller.user"))
-                .paths(PathSelectors.any())
-                .build();
-        return docket;
-    }
 
-    /**
-     * 设置静态资源映射
-     * @param registry
-     */
     @Override
-    protected void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册 Sa-Token 拦截器
+        registry.addInterceptor(new SaInterceptor(handle -> {
+                    // 指定校验规则：全局要求必须登录
+                    StpUtil.checkLogin();
+                }))
+                .addPathPatterns("/**")
+                // 放行不需要登录的接口
+                .excludePathPatterns(
+                        "/admin/employee/login",
+                        "/user/user/login",
+                        // 放行 Swagger/Knife4j 文档资源
+                        "/doc.html",
+                        "/doc.html/**",
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs/swagger-config",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/favicon.ico"
+                );
+    }
+
+    /**
+     * 资源处理器：
+     *
+     * @param registry
+     **/
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/doc.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
 
@@ -85,17 +76,15 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 扩展Spring MVC框架的消息转化器
      **/
     @Override
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
         log.info("扩展消息转换器...");
         //创建消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         //设置对象转换器，底层使用Jackson将Java对象转为json
         converter.setObjectMapper(new JacksonObjectMapper());
         //将上面的消息转换器对象追加到converters中
-        converters.add(0,converter);
+        converters.add(converter);
     }
-
-
 
 
 }

@@ -1,8 +1,8 @@
 package com.tanyde.aspect;
 
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.tanyde.constant.AutoFillConstant;
-import com.tanyde.context.BaseContext;
 import com.tanyde.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -57,9 +57,11 @@ public class AutoFillAspect {
         Object entity=args[0];
         //准备赋值的数据
         LocalDateTime now=LocalDateTime.now();
-        Long currentId= BaseContext.getCurrentId();
-        if (currentId == null) {
-            currentId = 0L; // 系统用户
+        Long currentId;
+        try {
+            currentId = StpUtil.getLoginIdAsLong();
+        } catch (Exception e) {
+            currentId = 0L; // 系统用户或未登录用户
         }
 
         //根据不同类型，对应属性进行反射来赋值

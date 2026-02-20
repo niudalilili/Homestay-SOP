@@ -19,6 +19,16 @@ public class ActivityPlanPageQueryDTO {
 
     private Integer season;
 
+    private Integer scene;
+
+    private Integer minAge;
+
+    private Integer maxAge;
+
+    private Integer minDuration;
+
+    private Integer maxDuration;
+
     private Integer page;
 
     private Integer pageSize;

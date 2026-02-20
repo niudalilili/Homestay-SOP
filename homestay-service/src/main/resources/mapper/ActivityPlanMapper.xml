@@ -8,11 +8,11 @@
             useGeneratedKeys="true"
             keyProperty="id">
             insert into activity_plan
-                (plan_name, age_group, activity_category,
+                (plan_name, min_age, max_age, activity_category,
                  season, duration, scene, status,
                  create_time, update_time, create_user, update_user)
             values
-                (#{planName}, #{ageGroup}, #{activityCategory},
+                (#{planName}, #{minAge}, #{maxAge}, #{activityCategory},
                  #{season}, #{duration}, #{scene}, #{status},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
@@ -23,8 +23,11 @@
             <if test="planName!=null and planName!=''">
                 plan_name=#{planName},
             </if>
-            <if test="ageGroup!=null and ageGroup!=''">
-                age_group=#{ageGroup},
+            <if test="minAge!=null">
+                min_age=#{minAge},
+            </if>
+            <if test="maxAge!=null">
+                max_age=#{maxAge},
             </if>
             <if test="activityCategory!=null and activityCategory!=''">
                 activity_category=#{activityCategory},
@@ -61,7 +64,7 @@
     </delete>
 
     <select id="selectById" resultType="com.tanyde.entity.ActivityPlan">
-        select id, plan_name, age_group,
+        select id, plan_name, min_age, max_age,
                activity_category, season, duration,
                scene, status,
                create_time, update_time, create_user, update_user
@@ -70,7 +73,7 @@
     </select>
 
     <select id="pageQuery" resultType="com.tanyde.entity.ActivityPlan">
-        select id, plan_name, age_group,
+        select id, plan_name, min_age, max_age,
                activity_category, season, duration,
                scene, status,
                create_time, update_time, create_user, update_user
@@ -85,8 +88,36 @@
             <if test="season !=null">
                 and (season &amp; #{season})!=0
             </if>
+            <if test="scene !=null">
+                and scene=#{scene}
+            </if>
+            <if test="minAge != null">
+                and min_age &gt;= #{minAge}
+            </if>
+            <if test="maxAge != null">
+                and max_age &lt;= #{maxAge}
+            </if>
+            <if test="minDuration != null">
+                and duration &gt;= #{minDuration}
+            </if>
+            <if test="maxDuration != null">
+                and duration &lt;= #{maxDuration}
+            </if>
         </where>
-        order by create_time desc
+        order by create_time asc
+    </select>
+
+    <!-- 统计活动方案总数 -->
+    <select id="countAll" resultType="int">
+        select count(*) from activity_plan
+    </select>
+
+    <!-- 按创建时间范围统计活动方案数量 -->
+    <select id="countByCreateTimeRange" resultType="int">
+        select count(*)
+        from activity_plan
+        where create_time &gt;= #{startTime}
+          and create_time &lt; #{endTime}
     </select>
 
 
