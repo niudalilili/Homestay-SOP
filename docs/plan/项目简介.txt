@@ -1,0 +1,357 @@
+ # 民宿管理系统 - 完整项目文档
+
+ ## 1. 项目概述
+
+ ### 1.1 项目名称
+ 民宿管理系统 (Homestay Management System)
+
+ ### 1.2 项目背景
+ 这是一个基于 Spring Boot 3.5.9 开发的民宿管理系统，主要用于管理民宿活动方案、员工信息以及普通用户（民宿客人）。项目采
+ 用微服务架构设计，分为三个核心模块。
+
+ ### 1.3 技术栈
+ - **后端框架**: Spring Boot 3.5.9
+ - **数据库**: MySQL 8.0.33
+ - **ORM框架**: MyBatis 3.0.3
+ - **安全框架**: Sa-Token
+ - **接口文档**: Knife4j + SpringDoc OpenAPI
+ - **构建工具**: Maven
+ - **JDK版本**: 17
+ - **开发工具**: IntelliJ IDEA
+
+ ### 1.4 项目结构
+ ```
+ mingSu/
+ ├── homestay-common/     # 公共模块
+ ├── homestay-pojo/       # 实体类模块
+ ├── homestay-service/    # 主服务模块
+ └── docs/                # 文档目录
+ ```
+
+ ## 2. 模块详细设计
+
+ ### 2.1 homestay-common 模块
+
+ **功能**: 公共常量、枚举、异常等基础组件
+
+ **核心组件**:
+
+ #### 2.1.1 常量类
+ - `AutoFillConstant`: 自动填充常量
+ - `JwtClaimsConstant`: JWT声明常量
+ - `MessageConstant`: 消息提示常量
+ - `PasswordConstant`: 密码相关常量
+ - `StatusConstant`: 状态常量
+
+ #### 2.1.2 枚举类
+ - `ActivityStatus`: 活动方案状态枚举
+   - DRAFT(1, "草稿")
+   - ONLINE(2, "上线")
+   - OFFLINE(3, "下线")
+ - `OperationType`: 操作类型枚举
+
+ #### 2.1.3 异常类
+ - `AccountLockedException`: 账号锁定异常
+ - `AccountNotFoundException`: 账号未找到异常
+ - `PasswordErrorException`: 密码错误异常
+
+ ### 2.2 homestay-pojo 模块
+
+ **功能**: 实体类、DTO、VO等数据模型
+
+ **核心包结构**:
+ ```
+ com.tanyde/
+ ├── annotation/          # 自定义注解
+ ├── aspect/             # AOP切面
+ ├── dto/                # 数据传输对象
+ ├── entity/             # 实体类
+ ├── vo/                 # 视图对象
+ └── enumeration/        # 枚举类
+ ```
+
+ #### 2.2.1 核心实体类
+ - `Employee`: 员工实体
+ - `ActivityPlan`: 活动方案实体
+ - `ActivityPlanContent`: 活动方案内容实体
+ - `ActivityStep`: 活动步骤实体
+
+ #### 2.2.2 主要DTO
+ - `EmployeeDTO`: 员工数据传输对象
+ - `EmployeeLoginDTO`: 员工登录DTO
+ - `EmployeePageQueryDTO`: 员工分页查询DTO
+ - `ActivityPlanDTO`: 活动方案DTO
+ - `ActivityPlanPageQueryDTO`: 活动方案分页查询DTO
+ - `PasswordEditDTO`: 密码编辑DTO
+
+ #### 2.2.3 主要VO
+ - `EmployeeLoginVO`: 员工登录返回VO
+
+ ### 2.3 homestay-service 模块
+
+ **功能**: 主要业务逻辑实现
+
+ #### 2.3.1 包结构
+ ```
+ com.tanyde/
+ ├── config/             # 配置文件
+ ├── controller/         # 控制器层
+ │   ├── admin/         # 管理端控制器
+ │   └── user/          # 用户端控制器
+ ├── handler/           # 异常处理器
+ ├── interceptor/       # 拦截器
+ ├── mapper/            # 数据访问层
+ ├── service/           # 服务层
+ │   └── Impl/          # 服务实现类
+ └── vo/                # 视图对象
+ ```
+
+ #### 2.3.2 核心控制器
+
+ **管理端控制器**:
+ - `ActivityPlanController`: 活动方案管理
+ - `EmployeeController`: 员工管理
+ - `HelloController`: 测试控制器
+
+ **用户端控制器**:
+ - `ActivityPlanController`: 活动方案查询（预留）
+
+ #### 2.3.3 核心服务
+
+ **EmployeeService**:
+ - 员工登录/退出
+ - 员工CRUD操作
+ - 密码管理
+ - 状态管理
+
+ **ActivityPlanService**:
+ - 活动方案CRUD
+ - 分页查询
+ - 状态管理
+ - 仪表盘统计
+
+ ### 2.4 数据库设计
+
+ #### 2.4.1 核心表结构
+
+ **activity_plan** (活动方案表):
+ - `id`: 主键
+ - `plan_name`: 方案名称
+ - `age_group`: 适用年龄段
+ - `activity_category`: 活动类别
+ - `season`: 适合季节(位掩码: 1春 2夏 4秋 8冬)
+ - `duration`: 活动时长(分钟)
+ - `scene`: 活动场景(1室外 0通用)
+ - `status`: 状态(1草稿 2上线 3下线)
+ - 审计字段: created_time, updated_time, created_user, updated_user
+
+ **activity_plan_content** (活动方案内容表):
+ - `id`: 主键
+ - `activity_plan_id`: 活动方案ID
+ - `knowledge_goal`: 知识目标
+ - `emotion_goal`: 情感目标
+ - `materials`: 所需材料
+ - `space_requirement`: 场地要求
+ - `preparation_time`: 准备时间
+ - `staff_tips`: 员工准备提示
+ - `general_warning`: 通用安全提示
+ - `special_reminder`: 特殊安全提醒
+
+ **activity_step** (活动步骤表):
+ - `id`: 主键
+ - `activity_plan_id`: 活动方案ID
+ - `step_number`: 步骤顺序
+ - `step_title`: 步骤标题
+ - `duration`: 步骤时长
+ - `step_type`: 步骤类型(1讲解 2总结)
+ - `knowledge_explanation`: 知识讲解
+ - `action_desc`: 操作说明
+ - `guidance_speech`: 引导话术
+ - `interaction_tips`: 互动提示
+ - `summary`: 内容小结
+
+ **employee** (员工表):
+ - `id`: 主键
+ - `username`: 用户名
+ - `password`: 密码(MD5加密)
+ - `name`: 姓名
+ - `status`: 状态(1启用 0禁用)
+ - 审计字段
+
+ ## 3. API接口设计
+
+ ### 3.1 员工管理接口 (/admin/employee)
+
+ | 方法 | 路径 | 描述 | 权限 | 请求体 | 响应 |
+ |------|------|------|------|--------|------|
+ | POST | /admin/employee/login | 员工登录 | 无 | EmployeeLoginDTO | Result<EmployeeLoginVO> |
+ | POST | /admin/employee/logout | 员工退出 | 已登录 | 无 | Result<String> |
+ | POST | /admin/employee | 新增员工 | admin角色 | EmployeeDTO | Result<String> |
+ | GET | /admin/employee/page | 员工分页查询 | admin角色 | EmployeePageQueryDTO | Result<PageResult> |
+ | POST | /admin/employee/status/{status} | 启用禁用员工 | admin角色 | id参数 | Result<String> |
+ | GET | /admin/employee/{id} | 查询员工信息 | admin角色 | id参数 | Result<Employee> |
+ | PUT | /admin/employee | 编辑员工信息 | admin角色 | EmployeeDTO | Result<String> |
+ | PUT | /admin/employee/editPassword | 编辑密码 | admin角色 | PasswordEditDTO | Result<String> |
+ | DELETE | /admin/employee/{id} | 删除员工 | admin角色 | id参数 | Result<String> |
+
+ ### 3.2 活动方案管理接口 (/admin/activityPlan)
+
+ | 方法 | 路径 | 描述 | 权限 | 请求体 | 响应 |
+ |------|------|------|------|--------|------|
+ | POST | /admin/activityPlan | 新增活动方案 | 已登录 | ActivityPlanDTO | Result |
+ | DELETE | /admin/activityPlan/batch | 批量删除 | 已登录 | List<Long> | Result |
+ | GET | /admin/activityPlan/{id} | 查询活动方案 | 已登录 | id参数 | Result<ActivityPlanDTO> |
+ | GET | /admin/activityPlan/page | 分页查询 | 已登录 | ActivityPlanPageQueryDTO | Result<PageResult> |
+ | GET | /admin/activityPlan/stats | 仪表盘统计 | 已登录 | 无 | Result<Map<String, Object>> |
+ | PUT | /admin/activityPlan/update | 更新活动方案 | 已登录 | ActivityPlanDTO | Result |
+ | PUT | /admin/activityPlan/status/{status} | 修改状态 | 已登录 | status, id | Result |
+
+ ## 4. 安全认证设计
+
+ ### 4.1 Sa-Token 配置
+
+ **token配置**:
+ - token-name: satoken
+ - timeout: 2592000 (30天)
+ - token-style: uuid
+ - is-concurrent: true (允许多地登录)
+ - is-share: false (每次登录新建token)
+
+ **权限控制**:
+ - `@SaCheckRole("admin")`: 管理员角色检查
+ - `@SaCheckLogin`: 登录状态检查
+ - 员工登录: `StpUtil.login(id)`
+
+ ### 4.2 密码安全
+ - 使用MD5加密存储
+ - 登录时验证原密码
+ - 密码修改需要验证原密码
+
+ ## 5. 架构特性
+
+ ### 5.1 分层架构
+ - **Controller层**: 处理HTTP请求，参数验证
+ - **Service层**: 业务逻辑处理
+ - **Mapper层**: 数据库操作
+ - **DTO/VO**: 数据传输和展示
+
+ ### 5.2 AOP切面
+ - `AutoFillAspect`: 自动填充审计字段
+ - 使用`@AutoFill`注解标记需要自动填充的字段
+
+ ### 5.3 异常处理
+ - `GlobalExceptionHandler`: 全局异常处理器
+ - 自定义异常类，统一错误码
+ - 返回标准Result格式
+
+ ### 5.4 分页查询
+ - 使用PageHelper实现分页
+ - 统一PageResult封装
+
+ ## 6. 开发规范
+
+ ### 6.1 代码规范
+ - 遵循Java命名规范
+ - 使用Lombok简化代码
+ - 统一的日志记录
+ - Swagger注解完善
+
+ ### 6.2 数据库规范
+ - 表名: 小写下划线
+ - 字段名: 小写下划线
+ - 包含审计字段
+ - 合理设置索引
+
+ ### 6.3 API规范
+ - RESTful风格
+ - 统一的响应格式
+ - 详细的Swagger文档
+
+ ## 7. 部署配置
+
+ ### 7.1 应用配置
+ - 端口: 8080
+ - 数据库: MySQL 8.0+
+ - 日志级别: debug(mapper), info(service/controller)
+
+ ### 7.2 环境配置
+ - 开发环境: application-dev.yml
+ - 生产环境: application-prod.yml
+
+ ## 8. 测试策略
+
+ ### 8.1 单元测试
+ - Service层单元测试
+ - Mapper层测试
+ - 测试覆盖率 > 80%
+
+ ### 8.2 集成测试
+ - API接口测试
+ - 权限验证测试
+ - 数据一致性测试
+
+ ## 9. 项目演进
+
+ ### 9.1 已完成功能
+ - 员工管理系统
+ - 活动方案管理
+ - 基础权限控制
+ - API文档生成
+
+ ### 9.2 规划中功能 (docs/plan/)
+ - **用户模块**: 普通用户管理、登录注册
+ - **RBAC权限系统**: 基于角色的访问控制
+ - **预订系统**: 民宿预订功能
+ - **会员体系**: VIP等级、积分系统
+
+ ## 10. 文档清单
+
+ ### 10.1 技术文档
+ - 数据库设计文档 (docs/uml/数据库设计.puml)
+ - API文档 (Knife4j自动生成)
+ - 用户模块实现计划 (docs/plan/user.txt)
+ - RBAC权限改造计划 (docs/plan/rbac.txt)
+
+ ### 10.2 流程文档
+ - 登录逻辑流程图 (docs/uml/登录逻辑.puml)
+ - 新建活动方案流程 (docs/uml/新建活动方案流程.puml)
+
+ ## 11. 快速开始
+
+ ### 11.1 环境准备
+ ```bash
+ # 克隆项目
+ git clone <repository-url>
+
+ # 导入Maven项目
+ mvn clean install
+
+ # 初始化数据库
+ source docs/sql/init.sql
+
+ # 启动应用
+ cd homestay-service
+ mvn spring-boot:run
+ ```
+
+ ### 11.2 访问地址
+ - 应用地址: http://localhost:8080
+ - API文档: http://localhost:8080/doc.html
+
+ ## 12. 项目维护
+
+ ### 12.1 版本控制
+ - 使用Git进行版本管理
+ - 遵循Git Flow工作流
+ - 详细的commit message
+
+ ### 12.2 代码质量
+ - 定期代码审查
+ - 保持代码整洁
+ - 及时更新文档
+
+ ---
+
+ **最后更新**: 2026年2月20日
+ **版本**: 1.0.0
+ **作者**: TanyDe

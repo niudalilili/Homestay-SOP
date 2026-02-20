@@ -1,0 +1,64 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+' ================= 单表 =================
+
+entity "employee" as employee {
+  + id : BIGINT <<PK>> \t\t\t 主键
+  --
+  username : VARCHAR(64) \t 用户名(登录账号)
+  name : VARCHAR(32) \t\t 员工姓名
+  password : VARCHAR(255) \t 密码(加密存储)
+  status : TINYINT \t\t\t 状态(0-禁用 1-正常)
+  create_time : DATETIME \t 创建时间
+  update_time : DATETIME \t 修改时间
+}
+
+entity "role" as role {
+  + id : BIGINT <<PK>> \t\t 主键
+  --
+  name : VARCHAR(50) \t\t 角色名称
+  code : VARCHAR(20) \t\t 角色编码(唯一)
+  description : VARCHAR(200) \t 角色描述
+  status : TINYINT \t\t\t 状态(0-禁用 1-启用)
+  create_time : DATETIME \t 创建时间
+  update_time : DATETIME \t 修改时间
+}
+
+entity "permission" as permission {
+  + id : BIGINT <<PK>> \t\t 主键
+  --
+  name : VARCHAR(50) \t\t 权限名称
+  code : VARCHAR(50) \t\t 权限编码(唯一,如employee:add)
+  description : VARCHAR(200) \t 权限描述
+  status : TINYINT \t\t\t 状态(0-禁用 1-启用)
+  create_time : DATETIME \t 创建时间
+  update_time : DATETIME \t 修改时间
+}
+
+' ================= 关联表 =================
+
+entity "employee_role" as employee_role {
+  + id : BIGINT <<PK>> \t\t 主键
+  --
+  employee_id : BIGINT <<UK, FK>> \t 员工ID
+  role_id : BIGINT <<UK, FK>> \t\t 角色ID
+  create_time : DATETIME \t\t 创建时间
+}
+
+entity "role_permission" as role_permission {
+  + id : BIGINT <<PK>> \t\t 主键
+  --
+  role_id : BIGINT <<UK, FK>> \t\t 角色ID
+  permission_id : BIGINT <<UK, FK>> \t 权限ID
+  create_time : DATETIME \t\t 创建时间
+}
+
+' ================= 关系 =================
+employee ||--o{ employee_role : "1:N"
+role ||--o{ employee_role : "1:N"
+role ||--o{ role_permission : "1:N"
+permission ||--o{ role_permission : "1:N"
+
+@enduml

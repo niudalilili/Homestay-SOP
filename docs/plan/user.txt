@@ -1,0 +1,361 @@
+ User模块实现计划
+
+ 1. 背景与目标
+
+ 1.1 问题描述
+
+ 当前民宿管理系统（homestay）已实现员工管理（Employee）模块，但缺乏普通用户（民宿客人）功能。项目需要为普通用户提供账户
+ 管理、活动浏览等基础功能，以满足民宿业务需求。
+
+ 1.2 项目现状
+
+ - 技术栈: Spring Boot 3.5.9 + MyBatis + MySQL + Sa-Token + Knife4j
+ - 现有用户管理: 基于Employee实体，仅支持员工账号管理
+ - 权限控制: 简单的SaToken角色控制（admin角色）
+ - RBAC改造计划: 已有详细文档，但尚未实施
+ - 数据库设计: 现有activity_plan等相关表，缺乏user表
+
+ 1.3 目标
+
+ 1. 实现普通用户（民宿客人）核心功能：注册、登录、个人信息管理
+ 2. 建立与员工管理平行的用户体系
+ 3. 设计可扩展的架构，支持未来预订、会员等功能
+ 4. 完成API文档和需求文档
+ 5. 分阶段实施权限控制，先简化模型，后续集成RBAC
+
+ 2. 实施范围
+
+ 2.1 第一阶段：基础用户功能
+
+ - 用户注册（用户名、密码、姓名、手机号、邮箱）
+ - 用户登录/退出
+ - 个人信息查看与更新
+ - 密码修改
+ - 用户状态管理（启用/禁用）
+
+ 2.2 第二阶段：活动浏览功能（预留）
+
+ - 活动方案列表查看
+ - 活动详情查看
+
+ 2.3 第三阶段：预订功能（预留）
+
+ - 提交预订申请
+ - 查看个人预订记录
+
+ 2.4 权限控制策略
+
+ - 当前阶段: 简化权限模型，普通用户固定为"customer"角色
+ - 后续阶段: 集成到RBAC系统，实现统一权限管理
+ - 数据隔离: 用户只能访问和操作自己的数据
+
+ 3. 架构设计
+
+ 3.1 数据库设计
+
+ -- 用户表（核心）
+ CREATE TABLE `user` (
+   `id` bigint NOT NULL AUTO_INCREMENT,
+   `username` varchar(50) NOT NULL COMMENT '用户名（唯一）',
+   `password` varchar(100) NOT NULL COMMENT 'MD5加密',
+   `name` varchar(50) DEFAULT NULL COMMENT '姓名',
+   `phone` varchar(20) DEFAULT NULL COMMENT '手机号（唯一）',
+   `email` varchar(100) DEFAULT NULL COMMENT '邮箱（唯一）',
+   `avatar` varchar(255) DEFAULT NULL COMMENT '头像URL',
+   `status` tinyint DEFAULT '1' COMMENT '1启用 0禁用',
+   `user_type` varchar(20) DEFAULT 'customer' COMMENT '用户类型',
+   `create_time` datetime DEFAULT NULL,
+   `update_time` datetime DEFAULT NULL,
+   `create_user` bigint DEFAULT NULL,
+   `update_user` bigint DEFAULT NULL,
+   PRIMARY KEY (`id`),
+   UNIQUE KEY `idx_username` (`username`),
+   UNIQUE KEY `idx_phone` (`phone`),
+   UNIQUE KEY `idx_email` (`email`)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='普通用户表';
+
+ 3.2 实体类设计
+
+ - User: 用户实体类（遵循现有Employee模式）
+ - UserLoginDTO: 登录数据传输对象
+ - UserRegisterDTO: 注册数据传输对象
+ - UserUpdateDTO: 信息更新数据传输对象
+ - UserLoginVO: 登录返回视图对象
+ - UserVO: 用户信息视图对象
+
+ 3.3 包结构
+
+ homestay-pojo/src/main/java/com/tanyde/
+ ├── entity/User.java                    # 新增
+ ├── dto/UserLoginDTO.java              # 新增
+ ├── dto/UserRegisterDTO.java           # 新增
+ ├── dto/UserUpdateDTO.java             # 新增
+ ├── dto/UserPasswordEditDTO.java       # 新增
+ ├── dto/UserPageQueryDTO.java          # 新增（管理端用）
+ └── vo/UserLoginVO.java                # 新增
+     vo/UserVO.java                     # 新增
+
+ homestay-service/src/main/java/com/tanyde/
+ ├── mapper/UserMapper.java             # 新增
+ ├── service/UserService.java           # 新增
+ ├── service/Impl/UserServiceImpl.java  # 新增
+ └── controller/user/UserController.java # 新增（用户端）
+
+ 3.4 权限设计
+
+ - 登录类型区分:
+   - 员工登录: StpUtil.login(id, "employee")
+   - 用户登录: StpUtil.login(id, "user")
+ - 权限验证: 修改StpInterfaceImpl支持多类型用户
+ - 接口保护:
+   - 用户端接口: @SaCheckLogin（只需登录）
+   - 管理端接口: @SaCheckPermission（特定权限）
+
+ 4. API接口设计
+
+ 4.1 用户端接口 (/user/**)
+
+ ┌──────┬────────────────┬──────────────┬─────────────────────┬─────────────────────┬──────────┐
+ │ 方法 │      路径      │     描述     │       请求体        │        响应         │   权限   │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ POST │ /user/register │ 用户注册     │ UserRegisterDTO     │ Result<String>      │ 无       │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ POST │ /user/login    │ 用户登录     │ UserLoginDTO        │ Result<UserLoginVO> │ 无       │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ POST │ /user/logout   │ 用户退出     │ 无                  │ Result<String>      │ 需要登录 │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ GET  │ /user/profile  │ 获取个人信息 │ 无                  │ Result<UserVO>      │ 需要登录 │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ PUT  │ /user/profile  │ 更新个人信息 │ UserUpdateDTO       │ Result<String>      │ 需要登录 │
+ ├──────┼────────────────┼──────────────┼─────────────────────┼─────────────────────┼──────────┤
+ │ PUT  │ /user/password │ 修改密码     │ UserPasswordEditDTO │ Result<String>      │ 需要登录 │
+ └──────┴────────────────┴──────────────┴─────────────────────┴─────────────────────┴──────────┘
+
+ 4.2 管理端接口 (/admin/user/**) - 预留
+
+ ┌────────┬─────────────────────────────┬───────────────┬─────────────┐
+ │  方法  │            路径             │     描述      │    权限     │
+ ├────────┼─────────────────────────────┼───────────────┼─────────────┤
+ │ GET    │ /admin/user/page            │ 用户分页查询  │ user:query  │
+ ├────────┼─────────────────────────────┼───────────────┼─────────────┤
+ │ POST   │ /admin/user/status/{status} │ 启用/禁用用户 │ user:status │
+ ├────────┼─────────────────────────────┼───────────────┼─────────────┤
+ │ DELETE │ /admin/user/{id}            │ 删除用户      │ user:delete │
+ └────────┴─────────────────────────────┴───────────────┴─────────────┘
+
+ 5. 关键实现细节
+
+ 5.1 密码安全
+
+ - 使用MD5加密（与现有Employee模块一致）
+ - 默认密码策略：注册时用户自定义密码
+ - 密码修改需验证原密码
+
+ 5.2 唯一性校验
+
+ - 用户名唯一
+ - 手机号唯一
+ - 邮箱唯一
+ - 注册时实时校验，避免重复
+
+ 5.3 审计字段
+
+ - 遵循现有模式：create_time, update_time, create_user, update_user
+ - 使用@AutoFill注解自动填充
+
+ 5.4 异常处理
+
+ - 扩展GlobalExceptionHandler处理用户相关异常
+ - 自定义异常类：UserNotFoundException, UserDuplicateException等
+ - 统一错误码和消息格式
+
+ 5.5 配置修改
+
+ 1. WebMvcConfiguration: 放行/user/login和/user/register路径
+ 2. 常量类扩展: 在MessageConstant中添加用户相关消息常量
+ 3. StpInterfaceImpl修改: 支持多类型用户权限查询
+
+ 6. 文件修改清单
+
+ 6.1 新增文件
+
+ 1. 实体与DTO/VO:
+   - homestay-pojo/src/main/java/com/tanyde/entity/User.java
+   - homestay-pojo/src/main/java/com/tanyde/dto/UserLoginDTO.java
+   - homestay-pojo/src/main/java/com/tanyde/dto/UserRegisterDTO.java
+   - homestay-pojo/src/main/java/com/tanyde/dto/UserUpdateDTO.java
+   - homestay-pojo/src/main/java/com/tanyde/dto/UserPasswordEditDTO.java
+   - homestay-pojo/src/main/java/com/tanyde/dto/UserPageQueryDTO.java
+   - homestay-pojo/src/main/java/com/tanyde/vo/UserLoginVO.java
+   - homestay-pojo/src/main/java/com/tanyde/vo/UserVO.java
+ 2. Mapper层:
+   - homestay-service/src/main/java/com/tanyde/mapper/UserMapper.java
+   - homestay-service/src/main/resources/mapper/UserMapper.xml
+ 3. Service层:
+   - homestay-service/src/main/java/com/tanyde/service/UserService.java
+   - homestay-service/src/main/java/com/tanyde/service/Impl/UserServiceImpl.java
+ 4. Controller层:
+   - homestay-service/src/main/java/com/tanyde/controller/user/UserController.java
+
+ 6.2 修改文件
+
+ 1. 权限配置:
+   - homestay-service/src/main/java/com/tanyde/service/Impl/StpInterfaceImpl.java - 支持多类型用户
+   - homestay-service/src/main/java/com/tanyde/config/WebMvcConfiguration.java - 放行用户接口
+ 2. 异常处理:
+   - homestay-service/src/main/java/com/tanyde/handler/GlobalExceptionHandler.java - 添加用户异常处理
+ 3. 常量类:
+   - homestay-common/src/main/java/com/tanyde/constant/MessageConstant.java - 添加用户消息常量
+
+ 6.3 数据库脚本
+
+ - docs/sql/user_table.sql - 用户表创建脚本
+ - docs/sql/init_user_data.sql - 初始化测试数据脚本
+
+ 7. 文档产出计划
+
+ 7.1 API文档
+
+ - 工具: Knife4j（现有）
+ - 方法: 在Controller和DTO/VO中添加Swagger注解
+ - 产出: 自动生成的在线API文档
+ - 内容: 接口描述、参数说明、请求示例、响应示例
+
+ 7.2 需求文档
+
+ - 格式: Markdown文档
+ - 位置: docs/requirements/user-module.md
+ - 结构:
+ 1. 概述
+ 2. 功能需求
+ 3. 非功能需求
+ 4. 接口设计
+ 5. 数据库设计
+ 6. 权限设计
+ 7. 测试用例
+
+ 7.3 数据库设计文档
+
+ - 更新: docs/uml/数据库设计V3.0.puml（包含user表）
+ - 格式: PlantUML
+
+ 8. 验证计划
+
+ 8.1 单元测试
+
+ - UserServiceTest: 测试用户注册、登录、更新等业务逻辑
+ - UserMapperTest: 测试数据访问层
+ - 测试覆盖率：核心业务方法>80%
+
+ 8.2 集成测试
+
+ 1. 注册流程测试:
+   - 正常注册
+   - 重复用户名/手机号/邮箱
+   - 参数校验
+ 2. 登录流程测试:
+   - 正常登录
+   - 错误密码
+   - 禁用账号登录
+ 3. 权限测试:
+   - 未登录访问受保护接口
+   - 登录后正常访问
+   - 用户数据隔离验证
+
+ 8.3 API测试
+
+ - 使用Postman/curl测试所有REST接口
+ - 验证请求/响应格式
+ - 测试错误处理
+
+ 8.4 文档验证
+
+ - API文档可访问且内容准确
+ - 需求文档完整且清晰
+ - 数据库脚本可执行
+
+ 9. 风险与缓解
+
+ 9.1 技术风险
+
+ - 风险: 权限控制逻辑复杂，可能影响现有功能
+ - 缓解: 分阶段实施，先简化模型，充分测试
+
+ 9.2 数据风险
+
+ - 风险: 用户数据与现有员工数据冲突
+ - 缓解: 明确区分user和employee表，使用不同登录类型
+
+ 9.3 兼容性风险
+
+ - 风险: 影响现有API接口
+ - 缓解: 新增接口，不修改现有接口，充分回归测试
+
+ 9.4 文档风险
+
+ - 风险: 文档与代码不一致
+ - 缓解: 开发过程中同步更新文档，代码审查包含文档检查
+
+ 10. 后续扩展考虑
+
+ 10.1 功能扩展
+
+ 1. 活动浏览: 集成现有activity_plan表，为用户提供活动查看功能
+ 2. 预订系统: 创建booking表，实现预订流程
+ 3. 会员体系: 添加vip等级、积分、优惠券等功能
+ 4. 消息通知: 站内信、邮件通知等
+
+ 10.2 权限扩展
+
+ 1. RBAC集成: 将用户权限纳入统一RBAC系统
+ 2. 数据权限: 基于组织架构的数据访问控制
+ 3. 操作日志: 记录用户关键操作
+
+ 10.3 性能优化
+
+ 1. 缓存策略: 用户信息缓存，减少数据库查询
+ 2. 分库分表: 用户量大时的水平扩展方案
+ 3. 索引优化: 基于查询模式优化索引设计
+
+ 11. 实施时间线
+
+ 阶段1: 基础架构（1-2天）
+
+ - 数据库表创建
+ - 实体类、DTO、VO创建
+ - Mapper层实现
+
+ 阶段2: 业务逻辑（2-3天）
+
+ - Service层实现
+ - 异常处理增强
+ - 单元测试编写
+
+ 阶段3: API接口（1-2天）
+
+ - Controller层实现
+ - 权限配置修改
+ - 集成测试
+
+ 阶段4: 文档产出（1天）
+
+ - API文档完善
+ - 需求文档编写
+ - 数据库设计文档更新
+
+ 阶段5: 测试验证（1天）
+
+ - 全面测试
+ - Bug修复
+ - 性能验证
+
+ 12. 成功标准
+
+ 1. 功能完整: 所有计划功能正常可用
+ 2. 性能达标: 接口响应时间<200ms，支持并发访问
+ 3. 安全可靠: 密码加密存储，数据隔离有效
+ 4. 文档齐全: API文档、需求文档、设计文档完整准确
+ 5. 代码质量: 遵循现有代码规范，测试覆盖率达标
+ 6. 可维护性: 代码结构清晰，易于扩展
+
+ ---备注: 本计划基于现有项目架构设计，保持与现有代码风格和技术栈的一致性。实施过程中可根据实际情况进行调整。
