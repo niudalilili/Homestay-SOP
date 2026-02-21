@@ -20,9 +20,9 @@ import java.util.Map;
  * @author TanyDe
  * @create 2026/1/27
  **/
-@RestController
+@RestController("adminPlan")
 @RequestMapping("/admin/activityPlan")
-@Tag(name = "方案管理", description = "用户相关接口")
+@Tag(name = "方案管理", description = "方案相关接口")
 @Slf4j
 public class ActivityPlanController {
 
