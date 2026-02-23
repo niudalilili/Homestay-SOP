@@ -1,20 +1,17 @@
 package com.tanyde.dto.LoginDTO;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleDTO implements Serializable {
-
+public class RolePageQueryDTO implements Serializable {
     private Long id;
 
     private String name;
@@ -24,7 +21,8 @@ public class RoleDTO implements Serializable {
     private String description;
 
     private Integer status;
-    //权限ids
-    private List<Long> permissionIds;
 
+    private Integer page;
+
+    private Integer pageSize;
 }
