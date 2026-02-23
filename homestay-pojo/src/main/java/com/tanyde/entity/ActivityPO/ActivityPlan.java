@@ -1,4 +1,4 @@
-package com.tanyde.dto;
+package com.tanyde.entity.ActivityPO;
 
 
 import lombok.AllArgsConstructor;
@@ -7,17 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityPlanDTO implements Serializable {
-    private static final long serialVersionUID = 1L; // 修复序列化ID缺失
+public class ActivityPlan implements Serializable {
+    private static final long serialVersionUID=1L;
 
-    private Long id;  // 添加这个字段，用于更新操作
+    private Long id;
 
     private String planName;
 
@@ -35,8 +34,11 @@ public class ActivityPlanDTO implements Serializable {
 
     private Integer status;
 
-    private ActivityPlanContentDTO content;
+    private LocalDateTime createTime;
 
-    private List<ActivityStepDTO> steps;
+    private  LocalDateTime updateTime;
 
+    private Long createUser;
+
+    private Long updateUser;
 }

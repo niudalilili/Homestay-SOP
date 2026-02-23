@@ -1,4 +1,4 @@
-package com.tanyde.entity;
+package com.tanyde.entity.ActivityPO;
 
 
 import lombok.AllArgsConstructor;

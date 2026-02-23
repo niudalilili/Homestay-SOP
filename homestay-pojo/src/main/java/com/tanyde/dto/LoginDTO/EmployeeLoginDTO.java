@@ -1,4 +1,4 @@
-package com.tanyde.dto;
+package com.tanyde.dto.LoginDTO;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;

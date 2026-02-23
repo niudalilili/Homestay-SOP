@@ -6,11 +6,11 @@
     <insert id="insert">
         insert into employee(
             id, username, name,
-            password, status,role,
+            password, status,
             create_time, update_time, create_user, update_user
         ) VALUES(
                  #{id}, #{username}, #{name},
-                 #{password}, #{status},#{role},
+                 #{password}, #{status},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
@@ -20,7 +20,6 @@
             <if test="name != null">name=#{name},</if>
             <if test="username != null">username=#{username},</if>
             <if test="password != null">password=#{password},</if>
-            <if test="role != null">role=#{role},</if>
             <if test="status != null">status=#{status},</if>
             <if test="updateTime != null">update_time= #{updateTime},</if>
             <if test="updateUser != null">update_user= #{updateUser},</if>
@@ -28,17 +27,14 @@
         where id=#{id}
     </update>
 
-    <select id="pageQuery" resultType="com.tanyde.entity.Employee">
+    <select id="pageQuery" resultType="com.tanyde.entity.LoginPO.Employee">
         select id, username, name,
-               password, status, role,
+               password, status,
                create_time, update_time, create_user, update_user
         from employee
         <where>
             <if test="name != null and name!='' ">
                 and name like concat('%',#{name},'%')
-            </if>
-            <if test="role != null and role!='' ">
-                and role=#{role}
             </if>
             <if test="username != null and username!='' ">
                 and username like concat('%',#{username},'%')

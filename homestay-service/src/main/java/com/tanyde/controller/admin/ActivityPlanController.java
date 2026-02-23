@@ -1,7 +1,7 @@
 package com.tanyde.controller.admin;
 
-import com.tanyde.dto.ActivityPlanDTO;
-import com.tanyde.dto.ActivityPlanPageQueryDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import com.tanyde.service.ActivityPlanService;

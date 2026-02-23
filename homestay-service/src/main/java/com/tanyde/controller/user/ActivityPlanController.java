@@ -1,15 +1,13 @@
 package com.tanyde.controller.user;
 
 
-import com.tanyde.dto.ActivityPlanDTO;
-import com.tanyde.dto.ActivityPlanPageQueryDTO;
-import com.tanyde.entity.ActivityPlan;
+import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.*;
 
 /**

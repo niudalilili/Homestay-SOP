@@ -1,4 +1,4 @@
-package com.tanyde.dto;
+package com.tanyde.dto.LoginDTO;
 
 
 import lombok.Data;
@@ -13,7 +13,6 @@ public class EmployeePageQueryDTO {
     private String username;
     //页码
     private int page;
-
     //每页显示记录数
     private int pageSize;
 

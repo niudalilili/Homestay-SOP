@@ -62,7 +62,7 @@
         </foreach>
     </delete>
 
-    <select id="selectByPlanId" resultType="com.tanyde.entity.ActivityPlanContent">
+    <select id="selectByPlanId" resultType="com.tanyde.entity.ActivityPO.ActivityPlanContent">
         select id, activity_plan_id, knowledge_goal, emotion_goal,
                materials, space_requirement, preparation_time, staff_tips,
                general_warning, special_reminder,

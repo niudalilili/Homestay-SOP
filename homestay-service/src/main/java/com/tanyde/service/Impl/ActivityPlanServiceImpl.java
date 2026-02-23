@@ -4,13 +4,13 @@ package com.tanyde.service.Impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.tanyde.dto.ActivityPlanContentDTO;
-import com.tanyde.dto.ActivityPlanDTO;
-import com.tanyde.dto.ActivityPlanPageQueryDTO;
-import com.tanyde.dto.ActivityStepDTO;
-import com.tanyde.entity.ActivityPlan;
-import com.tanyde.entity.ActivityPlanContent;
-import com.tanyde.entity.ActivityStep;
+import com.tanyde.dto.ActivityDTO.ActivityPlanContentDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
+import com.tanyde.dto.ActivityDTO.ActivityStepDTO;
+import com.tanyde.entity.ActivityPO.ActivityPlan;
+import com.tanyde.entity.ActivityPO.ActivityPlanContent;
+import com.tanyde.entity.ActivityPO.ActivityStep;
 import com.tanyde.mapper.ActivityPlanContentMapper;
 import com.tanyde.mapper.ActivityPlanMapper;
 import com.tanyde.mapper.ActivityStepMapper;
@@ -140,7 +140,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
      * 根据id查询活动方案
      *
      * @param id
-     * @return com.tanyde.dto.ActivityPlanDTO
+     * @return com.tanyde.dto.ActivityDTO.ActivityPlanDTO
      * @author TanyDe
      * @create 2026/1/31
      **/

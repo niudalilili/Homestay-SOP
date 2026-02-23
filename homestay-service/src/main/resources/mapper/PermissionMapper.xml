@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.PermissionMapper">
+
+
+    <select id="getById" resultType="com.tanyde.entity.LoginPO.Permission">
+        select id, name, code, description, status, create_time, update_time
+        from permission
+        where id = #{id}
+    </select>
+
+    <select id="pageQuery" resultType="com.tanyde.entity.LoginPO.Permission">
+        select id, name, code, description, status, create_time, update_time
+        from permission
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="code != null and code != ''">
+                and code like concat('%', #{code}, '%')
+            </if>
+            <if test="description != null and description != ''">
+                and description like concat('%', #{description}, '%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="listAll" resultType="java.util.List">
+        select code
+        from permission
+
+    </select>
+
+
+</mapper>

@@ -1,10 +1,10 @@
 package com.tanyde.service;
 
-import com.tanyde.dto.EmployeeDTO;
-import com.tanyde.dto.EmployeeLoginDTO;
-import com.tanyde.dto.EmployeePageQueryDTO;
-import com.tanyde.dto.PasswordEditDTO;
-import com.tanyde.entity.Employee;
+import com.tanyde.dto.LoginDTO.EmployeeDTO;
+import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
+import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
+import com.tanyde.dto.LoginDTO.PasswordEditDTO;
+import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.result.PageResult;
 
 public interface EmployeeService {
@@ -13,7 +13,7 @@ public interface EmployeeService {
      * 登录
      *
      * @param employeeLoginDTO
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/3
      **/
@@ -51,7 +51,7 @@ public interface EmployeeService {
      * 根据id查询员工信息
      *
      * @param id
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/4
      **/

@@ -4,11 +4,11 @@ package com.tanyde.controller.admin;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
 
-import com.tanyde.dto.EmployeeDTO;
-import com.tanyde.dto.EmployeeLoginDTO;
-import com.tanyde.dto.EmployeePageQueryDTO;
-import com.tanyde.dto.PasswordEditDTO;
-import com.tanyde.entity.Employee;
+import com.tanyde.dto.LoginDTO.EmployeeDTO;
+import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
+import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
+import com.tanyde.dto.LoginDTO.PasswordEditDTO;
+import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import com.tanyde.service.EmployeeService;
@@ -136,7 +136,7 @@ public class EmployeeController {
      * 根据id查询员工信息
      *仅限管理员
      * @param id
-     * @return com.tanyde.result.Result<com.tanyde.entity.Employee>
+     * @return com.tanyde.result.Result<com.tanyde.entity.LoginPO.Employee>
      * @author TanyDe
      * @create 2026/1/4
      **/

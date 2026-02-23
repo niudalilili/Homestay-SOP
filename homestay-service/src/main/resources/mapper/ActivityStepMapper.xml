@@ -28,7 +28,7 @@
         </foreach>
     </delete>
 
-    <select id="selectByPlanId" resultType="com.tanyde.entity.ActivityStep">
+    <select id="selectByPlanId" resultType="com.tanyde.entity.ActivityPO.ActivityStep">
         select id, activity_plan_id, step_number,
                step_title, duration, step_type,
                knowledge_explanation, action_desc, guidance_speech,

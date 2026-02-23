@@ -1,4 +1,4 @@
-package com.tanyde.dto;
+package com.tanyde.dto.LoginDTO;
 
 
 import lombok.Data;
@@ -11,8 +11,6 @@ public class EmployeeDTO implements Serializable {
     private Long id;
 
     private String username;
-
-    private String role;
 
     private String password;
 

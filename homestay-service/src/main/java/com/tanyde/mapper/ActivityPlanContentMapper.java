@@ -2,8 +2,7 @@ package com.tanyde.mapper;
 
 
 import com.tanyde.annotation.AutoFill;
-import com.tanyde.dto.ActivityPlanContentDTO;
-import com.tanyde.entity.ActivityPlanContent;
+import com.tanyde.entity.ActivityPO.ActivityPlanContent;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 

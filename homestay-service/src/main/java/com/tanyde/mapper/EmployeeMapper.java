@@ -3,11 +3,10 @@ package com.tanyde.mapper;
 
 import com.github.pagehelper.Page;
 import com.tanyde.annotation.AutoFill;
-import com.tanyde.dto.EmployeePageQueryDTO;
-import com.tanyde.entity.Employee;
+import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
+import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -18,7 +17,7 @@ public interface EmployeeMapper {
      * 根据用户名查询数据
      * 
      * @param username
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/3
      **/
@@ -41,7 +40,7 @@ public interface EmployeeMapper {
      * 分页查询
      *
     * @param employeePageQueryDTO
-     * @return com.github.pagehelper.Page<com.tanyde.entity.Employee>
+     * @return com.github.pagehelper.Page<com.tanyde.entity.LoginPO.Employee>
      * @author TanyDe
      * @create 2026/1/4
      **/
@@ -62,7 +61,7 @@ public interface EmployeeMapper {
      * 根据id查询员工信息
      * 
      * @param id
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/4
      **/

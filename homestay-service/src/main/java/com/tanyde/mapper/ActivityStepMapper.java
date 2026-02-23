@@ -1,9 +1,6 @@
 package com.tanyde.mapper;
 
-import com.tanyde.annotation.AutoFill;
-import com.tanyde.entity.ActivityPlan;
-import com.tanyde.entity.ActivityStep;
-import com.tanyde.enumeration.OperationType;
+import com.tanyde.entity.ActivityPO.ActivityStep;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

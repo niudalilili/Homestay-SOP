@@ -3,10 +3,9 @@ package com.tanyde.mapper;
 
 import com.github.pagehelper.Page;
 import com.tanyde.annotation.AutoFill;
-import com.tanyde.dto.ActivityPlanPageQueryDTO;
-import com.tanyde.entity.ActivityPlan;
+import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
+import com.tanyde.entity.ActivityPO.ActivityPlan;
 import com.tanyde.enumeration.OperationType;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

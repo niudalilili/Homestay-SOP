@@ -1,4 +1,4 @@
-package com.tanyde.entity;
+package com.tanyde.dto.ActivityDTO;
 
 
 import lombok.AllArgsConstructor;
@@ -7,19 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActivityPlanContent implements Serializable {
-
-    private static final Long serialVersionUID=1L;
-
-    private Long id;
-
-    private Long activityPlanId;
+public class ActivityPlanContentDTO implements Serializable {
 
     private String knowledgeGoal;
 
@@ -37,11 +30,7 @@ public class ActivityPlanContent implements Serializable {
 
     private String specialReminder;
 
-    private LocalDateTime createTime;
 
-    private  LocalDateTime updateTime;
 
-    private Long createUser;
 
-    private Long updateUser;
 }

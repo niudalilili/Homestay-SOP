@@ -5,13 +5,12 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.tanyde.constant.MessageConstant;
-import com.tanyde.constant.PasswordConstant;
 import com.tanyde.constant.StatusConstant;
-import com.tanyde.dto.EmployeeDTO;
-import com.tanyde.dto.EmployeeLoginDTO;
-import com.tanyde.dto.EmployeePageQueryDTO;
-import com.tanyde.dto.PasswordEditDTO;
-import com.tanyde.entity.Employee;
+import com.tanyde.dto.LoginDTO.EmployeeDTO;
+import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
+import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
+import com.tanyde.dto.LoginDTO.PasswordEditDTO;
+import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.exception.*;
 import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
@@ -33,7 +32,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 登录
      *
      * @param employeeLoginDTO
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/3
      **/
@@ -127,7 +126,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * 根据id查询员工信息
      *
      * @param id
-     * @return com.tanyde.entity.Employee
+     * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/4
      **/

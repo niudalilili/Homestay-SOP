@@ -1,9 +1,8 @@
 package com.tanyde.service;
 
-import com.tanyde.dto.ActivityPlanDTO;
-import com.tanyde.dto.ActivityPlanPageQueryDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
+import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.result.PageResult;
-import com.tanyde.service.Impl.ActivityPlanServiceImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,7 @@ public interface ActivityPlanService {
      * 根据id查询活动方案
      *
      * @param id
-     * @return com.tanyde.dto.ActivityPlanDTO
+     * @return com.tanyde.dto.ActivityDTO.ActivityPlanDTO
      * @author TanyDe
      * @create 2026/1/31
      **/

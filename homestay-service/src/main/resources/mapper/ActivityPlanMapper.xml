@@ -63,7 +63,7 @@
         </foreach>
     </delete>
 
-    <select id="selectById" resultType="com.tanyde.entity.ActivityPlan">
+    <select id="selectById" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
         select id, plan_name, min_age, max_age,
                activity_category, season, duration,
                scene, status,
@@ -72,7 +72,7 @@
         where id = #{id}
     </select>
 
-    <select id="pageQuery" resultType="com.tanyde.entity.ActivityPlan">
+    <select id="pageQuery" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
         select id, plan_name, min_age, max_age,
                activity_category, season, duration,
                scene, status,
@@ -81,6 +81,9 @@
         <where>
             <if test="planName != null and planName !=''">
                 and plan_name like concat('%',#{planName},'%')
+            </if>
+            <if test="activityCategory != null and activityCategory != ''">
+                and activity_category = #{activityCategory}
             </if>
             <if test="status != null">
                 and status=#{status}

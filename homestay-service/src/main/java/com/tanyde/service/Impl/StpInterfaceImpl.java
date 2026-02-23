@@ -1,7 +1,7 @@
 package com.tanyde.service.Impl;
 
 import cn.dev33.satoken.stp.StpInterface;
-import com.tanyde.entity.Employee;
+import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

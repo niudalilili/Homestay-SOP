@@ -1,4 +1,4 @@
-package com.tanyde.dto;
+package com.tanyde.dto.LoginDTO;
 
 import lombok.Data;
 
