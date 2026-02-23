@@ -6,6 +6,7 @@ import com.tanyde.dto.LoginDTO.RolePageQueryDTO;
 import com.tanyde.entity.LoginPO.Role;
 import com.tanyde.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public interface RoleMapper {
      * @date 2026/2/23 20:58
      **/
     @AutoFill(value = OperationType.INSERT)
-    void addRolePermission(Long id, List<Long> permissionIds);
+    void addRolePermission(@Param("id") Long id,
+                           @Param("permissionIds")List<Long> permissionIds);
 
     /**
      * 修改角色
@@ -61,7 +63,7 @@ public interface RoleMapper {
      * @return void
      * @date 2026/2/23 20:59
      **/
-    void deletRole(Long id);
+    void deleteRole(Long id);
 
     /**
      * 根据id查询角色
@@ -89,4 +91,13 @@ public interface RoleMapper {
      * @date 2026/2/23 22:24
      **/
     Page<Role> pageQuery(RolePageQueryDTO rolePQDTO);
+
+    /**
+     * 根据角色编码查询角色数量
+     *
+     * @param code
+     * @return java.lang.Integer
+     * @date 2026/2/23 22:24
+     **/
+    Integer countByCode(String code);
 }

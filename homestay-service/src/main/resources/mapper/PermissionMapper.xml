@@ -30,10 +30,9 @@
         order by create_time desc
     </select>
 
-    <select id="listAll" resultType="java.util.List">
+    <select id="listAll" resultType="java.lang.String">
         select code
         from permission
-
     </select>
 
 

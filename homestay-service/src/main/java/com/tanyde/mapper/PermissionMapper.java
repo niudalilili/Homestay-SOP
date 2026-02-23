@@ -18,5 +18,5 @@ public interface PermissionMapper {
     Page<Permission> pageQuery(PermissionPageQueryDTO permissionPQDTO);
 
     //获得所有权限code
-    List listAll();
+    List<String> listAll();
 }

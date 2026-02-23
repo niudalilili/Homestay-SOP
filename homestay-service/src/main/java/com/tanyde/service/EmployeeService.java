@@ -6,6 +6,7 @@ import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
 import com.tanyde.dto.LoginDTO.PasswordEditDTO;
 import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.result.PageResult;
+import com.tanyde.vo.EmployeeVO;
 
 public interface EmployeeService {
 
@@ -55,7 +56,7 @@ public interface EmployeeService {
      * @author TanyDe
      * @create 2026/1/4
      **/
-    Employee getById(Long id);
+    EmployeeVO getById(Long id);
 
     /**
  * 编辑员工信息

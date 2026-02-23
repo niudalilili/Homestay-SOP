@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.tanyde.dto.LoginDTO.RoleDTO;
 import com.tanyde.dto.LoginDTO.RolePageQueryDTO;
 import com.tanyde.entity.LoginPO.Role;
+import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.mapper.RoleMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.RoleService;
@@ -21,49 +22,56 @@ import java.util.List;
 public class RoleServiceImpl implements RoleService {
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private EmployeeMapper employeeMapper;
 
     /**
      * 添加角色
      *
-     * @param roleVO
+     * @param roleDTO
      * @return void
      * @date 2026/2/23 20:29
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void add(RoleVO roleVO) {
+    public void add(RoleDTO roleDTO) {
         // 获取权限id
-        List<Long> permissionIds = roleVO.getPermissionIds();
+        List<Long> permissionIds = roleDTO.getPermissionIds();
         // 封装角色数据
-        Role role=new Role();
-        BeanUtils.copyProperties(roleVO,role);
+        Role role = new Role();
+        BeanUtils.copyProperties(roleDTO, role);
+        // 检查角色编码是否已存在
+        String code = role.getCode();
+        if (roleMapper.countByCode(code) > 0) {
+            throw new RuntimeException("角色编码已存在");
+        }
         // 添加角色
         roleMapper.add(role);
         // 添加角色权限关系
-        roleMapper.addRolePermission(role.getId(),permissionIds);
+        roleMapper.addRolePermission(role.getId(), permissionIds);
     }
 
     /**
      * 更新角色
      *
-     * @param roleVO
+     * @param roleDTO
      * @return void
      * @date 2026/2/23 20:29
      **/
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(RoleVO roleVO) {
+    public void update(RoleDTO roleDTO) {
         // 获取角色id和权限ids
-        Long roleId = roleVO.getId();
-        List<Long> permissionIds = roleVO.getPermissionIds();
+        Long roleId = roleDTO.getId();
+        List<Long> permissionIds = roleDTO.getPermissionIds();
         // 封装角色数据
-        Role role=new Role();
-        BeanUtils.copyProperties(roleVO,role);
+        Role role = new Role();
+        BeanUtils.copyProperties(roleDTO, role);
         // 更新角色
         roleMapper.update(role);
         // 修改角色权限关系
         roleMapper.deleteRolePermission(roleId);
-        roleMapper.addRolePermission(roleId,permissionIds);
+        roleMapper.addRolePermission(roleId, permissionIds);
     }
 
     /**
@@ -76,10 +84,15 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
-        // 删除角色
-        roleMapper.deletRole(id);
-        // 删除角色权限关系
-        roleMapper.deleteRolePermission(id);
+        //检查是否还有此角色的用户
+        if (employeeMapper.countByRoleId(id) > 0) {
+            throw new RuntimeException("此角色下有员工，不能删除");
+        } else {
+            // 删除角色
+            roleMapper.deleteRole(id);
+            // 删除角色权限关系
+            roleMapper.deleteRolePermission(id);
+        }
     }
 
     /**
@@ -90,16 +103,16 @@ public class RoleServiceImpl implements RoleService {
      * @date 2026/2/23 20:30
      **/
     @Override
-    public RoleDTO getById(Long roleId) {
+    public RoleVO getById(Long roleId) {
         // 获取角色id和权限ids
         Role role = roleMapper.getById(roleId);
         List<Long> permissionIds = roleMapper.getPermissionIdsByRoleId(roleId);
         // 封装数据
-        RoleDTO roleDTO = new RoleDTO() ;
-        BeanUtils.copyProperties(role,roleDTO);
-        roleDTO.setPermissionIds(permissionIds);
+        RoleVO roleVO = new RoleVO();
+        BeanUtils.copyProperties(role, roleVO);
+        roleVO.setPermissionIds(permissionIds);
 
-        return roleDTO;
+        return roleVO;
     }
 
     /**
@@ -114,7 +127,7 @@ public class RoleServiceImpl implements RoleService {
         //设置分页参数
         PageHelper.startPage(rolePQDTO.getPage(), rolePQDTO.getPageSize());
         //查询数据
-        Page< Role> page = roleMapper.pageQuery(rolePQDTO);
+        Page<Role> page = roleMapper.pageQuery(rolePQDTO);
         //返回pageResult
         long total = page.getTotal();
         List<Role> records = page.getResult();

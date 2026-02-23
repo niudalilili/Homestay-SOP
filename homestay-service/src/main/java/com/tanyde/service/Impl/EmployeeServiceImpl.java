@@ -15,9 +15,12 @@ import com.tanyde.exception.*;
 import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.EmployeeService;
+import com.tanyde.vo.EmployeePageVO;
+import com.tanyde.vo.EmployeeVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.List;
@@ -72,39 +75,44 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @create 2026/1/4
      **/
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void save(EmployeeDTO employeeDTO) {
         Employee employee=new Employee();
-
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO,employee);
+        //获取当前用户id
+        Long roleId = employeeDTO.getRoleId();
 
         //密码加密
         if (employee.getPassword() != null) {
             employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
+        }else{
+            //密码为空则设置默认密码123456
+            //TODO:此处123456应为加密后的密码
+            employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
         }
-
-        //设置账号状态
-        employee.setStatus(StatusConstant.ENABLE);
-
+        //添加员工
         employeeMapper.insert(employee);
+        //添加员工角色关系
+        employeeMapper.addEmployeeRole(employee.getId(),roleId);
     }
 
     /**
      * 分页查询
      *
-     * @param employeePageQueryDTO
+     * @param employeePQDTO
      * @return com.tanyde.result.PageResult
      * @author TanyDe
      * @create 2026/1/4
      **/
     @Override
-    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+    public PageResult pageQuery(EmployeePageQueryDTO employeePQDTO) {
         //分页查询
-        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
-        Page<Employee> page=employeeMapper.pageQuery(employeePageQueryDTO);
+        PageHelper.startPage(employeePQDTO.getPage(), employeePQDTO.getPageSize());
+        Page<EmployeePageVO> page=employeeMapper.pageQuery(employeePQDTO);
 
         long total=page.getTotal();
-        List<Employee> records=page.getResult();
+        List<EmployeePageVO> records=page.getResult();
         return new PageResult(total,records);
     }
 
@@ -131,10 +139,17 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @create 2026/1/4
      **/
     @Override
-    public Employee getById(Long id) {
+    public EmployeeVO getById(Long id) {
+        //获得员工信息
         Employee employee=employeeMapper.getById(id);
-        employee.setPassword("****");
-        return employee;
+        //获得员工角色信息
+        Long roleId=employeeMapper.getRoleIdById(id);
+        //封装成VO
+        EmployeeVO employeeVO=new EmployeeVO();
+        BeanUtils.copyProperties(employee,employeeVO);
+        employeeVO.setRoleId(roleId);
+
+        return employeeVO;
     }
 
     /**
@@ -146,11 +161,19 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @create 2026/1/4
      **/
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(EmployeeDTO employeeDTO) {
+        //创建员工对象
         Employee employee =new Employee();
+        //拷贝属性
         BeanUtils.copyProperties(employeeDTO,employee);
-
+        //修改员工信息
         employeeMapper.update(employee);
+        //修改员工角色关系
+        Long roleId = employeeDTO.getRoleId();
+        Long employeeId = employeeDTO.getId();
+        employeeMapper.updateEmployeeRole(employeeId,roleId);
+
     }
 
     /**
@@ -183,6 +206,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param id
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         // 1. 查询员工信息
         Employee employee = employeeMapper.getById(id);
@@ -208,6 +232,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 5. 执行删除
+        //删除员工
         employeeMapper.deleteById(id);
+        //删除员工角色关系
+        employeeMapper.deleteEmployeeRoleById(id);
     }
 }

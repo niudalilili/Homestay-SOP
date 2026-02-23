@@ -13,6 +13,7 @@ import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import com.tanyde.service.EmployeeService;
 import com.tanyde.vo.EmployeeLoginVO;
+import com.tanyde.vo.EmployeeVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,6 @@ public class EmployeeController {
         return Result.success(employeeLoginVO);
     }
 
-
     /**
      * 退出
      *
@@ -96,7 +96,6 @@ public class EmployeeController {
         return Result.success();
     }
 
-
     /**
      * 员工分页查询
      *
@@ -113,7 +112,6 @@ public class EmployeeController {
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
-
 
     /**
      * 启用禁用员工账号
@@ -143,9 +141,9 @@ public class EmployeeController {
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询员工信息")
     @SaCheckRole("admin")
-    public Result<Employee> getById(@PathVariable Long id) {
-        Employee employee = employeeService.getById(id);
-        return Result.success(employee);
+    public Result<EmployeeVO> getById(@PathVariable Long id) {
+        EmployeeVO employeeVO = employeeService.getById(id);
+        return Result.success(employeeVO);
     }
 
     /**

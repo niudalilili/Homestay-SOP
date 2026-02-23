@@ -7,13 +7,13 @@ import com.tanyde.vo.RoleVO;
 
 public interface RoleService {
     //新增
-    void add(RoleVO roleVO);
+    void add(RoleDTO roleDTO);
     //修改
-    void update(RoleVO roleVO);
+    void update(RoleDTO roleDTO);
     //删除
     void delete(Long id);
     //根据id查询
-    RoleDTO getById(Long id);
+    RoleVO getById(Long id);
     //分页查询
     PageResult pageQuery(RolePageQueryDTO rolePQDTO);
 }

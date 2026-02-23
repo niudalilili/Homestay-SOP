@@ -6,6 +6,7 @@ import com.tanyde.annotation.AutoFill;
 import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
 import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.enumeration.OperationType;
+import com.tanyde.vo.EmployeePageVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -15,13 +16,12 @@ public interface EmployeeMapper {
 
     /**
      * 根据用户名查询数据
-     * 
+     *
      * @param username
      * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
      * @create 2026/1/3
      **/
-    @Select("select * from employee where username=#{username}")
     Employee getByUsername(String username);
 
 
@@ -33,18 +33,29 @@ public interface EmployeeMapper {
      * @author TanyDe
      * @create 2026/1/4
      **/
-    @AutoFill(value= OperationType.INSERT)
+    @AutoFill(value = OperationType.INSERT)
     void insert(Employee employee);
+
+    /**
+     * 添加员工角色信息
+     *
+     * @param id
+     * @param roleId
+     * @return void
+     * @date 2026/2/23 23:08
+     **/
+    @AutoFill(value = OperationType.INSERT)
+    void addEmployeeRole(Long id, Long roleId);
 
     /**
      * 分页查询
      *
-    * @param employeePageQueryDTO
+     * @param employeePageQueryDTO
      * @return com.github.pagehelper.Page<com.tanyde.entity.LoginPO.Employee>
      * @author TanyDe
      * @create 2026/1/4
      **/
-    Page<Employee> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+    Page<EmployeePageVO> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
     /**
      * 更新员工数据
@@ -54,12 +65,12 @@ public interface EmployeeMapper {
      * @author TanyDe
      * @create 2026/1/4
      **/
-    @AutoFill(value=OperationType.UPDATE)
+    @AutoFill(value = OperationType.UPDATE)
     void update(Employee employee);
 
     /**
      * 根据id查询员工信息
-     * 
+     *
      * @param id
      * @return com.tanyde.entity.LoginPO.Employee
      * @author TanyDe
@@ -70,6 +81,7 @@ public interface EmployeeMapper {
 
     /**
      * 根据id删除员工
+     *
      * @param id
      */
     @Delete("delete from employee where id = #{id}")
@@ -77,8 +89,38 @@ public interface EmployeeMapper {
 
     /**
      * 统计员工数量
+     *
      * @return
      */
     @Select("select count(*) from employee")
     Integer count();
+
+    /**
+     * 根据id查询员工角色信息
+     *
+     * @return
+     */
+    Long getRoleIdById(Long employeeId);
+
+    /**
+     * 修改员工角色信息
+     *
+     * @return
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void updateEmployeeRole(Long employeeId, Long roleId);
+
+    /**
+     * 根据角色id查询员工数量
+     *
+     * @return
+     */
+    Integer countByRoleId(Long id);
+
+    /**
+     * 根据员工id删除员工角色信息
+     *
+     * @return
+     */
+    void deleteEmployeeRoleById(Long id);
 }

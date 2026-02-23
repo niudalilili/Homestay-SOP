@@ -4,6 +4,7 @@ package com.tanyde.dto.LoginDTO;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class EmployeeDTO implements Serializable {
@@ -15,5 +16,9 @@ public class EmployeeDTO implements Serializable {
     private String password;
 
     private String name;
+
+    private Integer status;
+
+    private Long roleId;
 
 }
