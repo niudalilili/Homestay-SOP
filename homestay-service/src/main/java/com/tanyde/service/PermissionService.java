@@ -19,6 +19,15 @@ public interface PermissionService {
     PermissionDTO getById(Long id);
 
     /**
+     * 根据EmployeeId获得权限codes
+     *
+     * @param employeeId
+     * @return java.util.List<java.lang.String>
+     * @date 2026/2/22 16:31
+     **/
+    public List<String> getCodesByIds(Long employeeId) ;
+
+    /**
      * 分页查询
      *
      * @param permissionPageQueryDTO

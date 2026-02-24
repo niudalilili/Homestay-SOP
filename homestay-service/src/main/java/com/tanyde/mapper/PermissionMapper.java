@@ -19,4 +19,10 @@ public interface PermissionMapper {
 
     //获得所有权限code
     List<String> listAll();
+
+    //根据ids查询权限codes
+    List<String> getCodesByIds(List<Long> ids);
+
+    //根据员工id查询权限codes
+    List<String> getCodesByEmployeeId(Long employeeId);
 }

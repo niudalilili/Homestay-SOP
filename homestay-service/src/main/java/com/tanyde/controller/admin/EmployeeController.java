@@ -1,9 +1,9 @@
 package com.tanyde.controller.admin;
 
-
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
-import cn.dev33.satoken.stp.StpUtil;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.tanyde.dto.LoginDTO.EmployeeDTO;
 import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
 import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-
 /**
  * 员工管理
  *
@@ -29,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
  **/
 @RestController
 @RequestMapping("/admin/employee")
-@Tag(name="员工管理",description = "员工管理相关接口")
+@Tag(name = "员工管理", description = "员工管理相关接口")
 @Slf4j
 public class EmployeeController {
     @Autowired
@@ -47,13 +46,13 @@ public class EmployeeController {
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
         log.info("员工登录:{}", employeeLoginDTO);
-        //1. 调用service进行登录密码校验
+        // 1. 调用service进行登录密码校验
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //2.登录成功，使用satoken记录登录状态
-        //参数填写用户id，生成token并注入到cookie/header
+        // 2.登录成功，使用satoken记录登录状态
+        // 参数填写用户id，生成token并注入到cookie/header
         StpUtil.login(employee.getId());
-        //3.构建返回结果
+        // 3.构建返回结果
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
                 .userName(employee.getUsername())
@@ -89,7 +88,7 @@ public class EmployeeController {
      **/
     @PostMapping
     @Operation(summary = "新增员工")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:add")
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
         log.info("新增员工:{}", employeeDTO);
         employeeService.save(employeeDTO);
@@ -98,7 +97,7 @@ public class EmployeeController {
 
     /**
      * 员工分页查询
-     *
+     * 
      * @param employeePageQueryDTO
      * @return
      * @author TanyDe
@@ -106,7 +105,7 @@ public class EmployeeController {
      **/
     @GetMapping("/page")
     @Operation(summary = "员工分页查询")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:query")
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
         log.info("员工分页查询，参数为{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
@@ -115,7 +114,7 @@ public class EmployeeController {
 
     /**
      * 启用禁用员工账号
-     *仅限管理员
+     * 
      * @param status
      * @return
      * @author TanyDe
@@ -123,7 +122,7 @@ public class EmployeeController {
      **/
     @PostMapping("/status/{status}")
     @Operation(summary = "启用禁用员工账号")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:status")
     public Result startOrStop(@PathVariable Integer status, Long id) {
         log.info("启用禁用员工账号:{}{}", status, id);
         employeeService.startOrStop(status, id);
@@ -132,7 +131,7 @@ public class EmployeeController {
 
     /**
      * 根据id查询员工信息
-     *仅限管理员
+     * 
      * @param id
      * @return com.tanyde.result.Result<com.tanyde.entity.LoginPO.Employee>
      * @author TanyDe
@@ -140,7 +139,7 @@ public class EmployeeController {
      **/
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询员工信息")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:query")
     public Result<EmployeeVO> getById(@PathVariable Long id) {
         EmployeeVO employeeVO = employeeService.getById(id);
         return Result.success(employeeVO);
@@ -148,7 +147,7 @@ public class EmployeeController {
 
     /**
      * 编辑员工信息
-     * 仅限管理员
+     * 
      * @param employeeDTO
      * @return
      * @author TanyDe
@@ -156,7 +155,7 @@ public class EmployeeController {
      **/
     @PutMapping
     @Operation(summary = "编辑员工信息")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:update")
     public Result update(@RequestBody EmployeeDTO employeeDTO) {
         log.info("编辑员工信息:{}", employeeDTO);
         employeeService.update(employeeDTO);
@@ -165,7 +164,7 @@ public class EmployeeController {
 
     /**
      * 编辑员工密码
-     * 仅限管理员
+     * 
      * @param passwordEditDTO
      * @return com.tanyde.result.Result
      * @author TanyDe
@@ -173,7 +172,7 @@ public class EmployeeController {
      **/
     @PutMapping("/editPassword")
     @Operation(summary = "编辑员工密码")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:password")
     public Result editPassword(@RequestBody PasswordEditDTO passwordEditDTO) {
         log.info("编辑员工密码:{}", passwordEditDTO);
         employeeService.editPassword(passwordEditDTO);
@@ -182,18 +181,17 @@ public class EmployeeController {
 
     /**
      * 删除员工
-     * 仅限管理员
+     * 
      * @param id
      * @return
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除员工")
-    @SaCheckRole("admin")
+    @SaCheckPermission("employee:delete")
     public Result delete(@PathVariable Long id) {
         log.info("删除员工:{}", id);
         employeeService.deleteById(id);
         return Result.success();
     }
-
 
 }

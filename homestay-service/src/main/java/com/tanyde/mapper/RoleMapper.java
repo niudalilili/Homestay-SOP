@@ -100,4 +100,13 @@ public interface RoleMapper {
      * @date 2026/2/23 22:24
      **/
     Integer countByCode(String code);
+
+    /**
+     * 根据员工id查询角色
+     *
+     * @param employeeId
+     * @return java.lang.String
+     * @date 2026/2/23 22:24
+     **/
+    String getRoleCodeByEmployeeId(Long employeeId);
 }

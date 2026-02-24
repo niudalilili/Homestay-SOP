@@ -35,5 +35,23 @@
         from permission
     </select>
 
+    <select id="getCodesByIds" resultType="java.lang.String">
+            select code
+            from permission
+            where id in
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
+
+    <select id="getCodesByEmployeeId" resultType="java.lang.String">
+            select DISTINCT p.code
+            from permission p
+            inner join role_permission rp ON p.id=rp.permission_id
+            inner join employee_role er ON rp.role_id=er.role_id
+            where er.employee_id=#{employeeId}
+            and p.status=1
+    </select>
+
 
 </mapper>

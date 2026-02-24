@@ -116,6 +116,21 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
+     * 根据员工id查询角色
+     *
+     * @param employeeId
+     * @return java.lang.String
+     * @date 2026/2/23 20:32
+     **/
+    @Override
+    public String getRoleCodeByEmployeeId(Long employeeId) {
+        String roleCode=roleMapper.getRoleCodeByEmployeeId(employeeId);
+
+        return roleCode;
+    }
+
+
+    /**
      * 分页查询
      *
      * @param rolePQDTO

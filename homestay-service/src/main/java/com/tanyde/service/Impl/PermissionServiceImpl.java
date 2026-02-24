@@ -39,6 +39,19 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     /**
+     * 根据EmployeeId获得权限codes
+     *
+     * @param employeeId
+     * @return java.util.List<java.lang.String>
+     * @date 2026/2/22 16:31
+     **/
+    @Override
+    public List<String> getCodesByIds(Long employeeId) {
+        List<String> codes = permissionMapper.getCodesByEmployeeId(employeeId);
+        return codes;
+    }
+
+    /**
      * 分页查询权限信息
      *
      * @param permissionPQDTO
@@ -71,8 +84,6 @@ public class PermissionServiceImpl implements PermissionService {
      **/
     @Override
     public List<String> listAll() {
-        List allCodes=permissionMapper.listAll();
-
-        return allCodes;
+        return permissionMapper.listAll();
     }
 }

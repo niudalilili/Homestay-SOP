@@ -42,7 +42,8 @@ public interface EmployeeService {
     PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
 
     /**
-     *启用禁用员工账号
+     * 启用禁用员工账号
+     *
      * @param status
      * @param id
      */
@@ -58,14 +59,15 @@ public interface EmployeeService {
      **/
     EmployeeVO getById(Long id);
 
+
     /**
- * 编辑员工信息
- *
- * @param employeeDTO
- * @return void
- * @author TanyDe
- * @create 2026/1/4
- **/
+     * 编辑员工信息
+     *
+     * @param employeeDTO
+     * @return void
+     * @author TanyDe
+     * @create 2026/1/4
+     **/
     void update(EmployeeDTO employeeDTO);
 
     /**
@@ -80,6 +82,7 @@ public interface EmployeeService {
 
     /**
      * 删除员工
+     *
      * @param id
      */
     void deleteById(Long id);

@@ -32,32 +32,6 @@ import java.util.List;
 @Slf4j
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        // 注册 Sa-Token 拦截器
-        registry.addInterceptor(new SaInterceptor(handle -> {
-                    // 指定校验规则：全局要求必须登录
-                    StpUtil.checkLogin();
-                }))
-                .addPathPatterns("/**")
-                // 放行不需要登录的接口
-                .excludePathPatterns(
-                        "/admin/employee/login",
-                        "/user/user/login",
-                        // 放行 Swagger/Knife4j 文档资源
-                        "/doc.html",
-                        "/doc.html/**",
-                        "/webjars/**",
-                        "/swagger-resources/**",
-                        "/v3/api-docs/**",
-                        "/v3/api-docs/swagger-config",
-                        "/swagger-ui/**",
-                        "/swagger-ui.html",
-                        "/favicon.ico"
-                );
-    }
-
     /**
      * 资源处理器：
      *
@@ -70,8 +44,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-
-
     /**
      * 扩展Spring MVC框架的消息转化器
      **/

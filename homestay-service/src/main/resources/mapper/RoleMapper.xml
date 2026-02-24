@@ -66,8 +66,17 @@
     </select>
 
     <select id="countByCode" resultType="java.lang.Integer">
-            select count(code)
+            select count(*)
             from role
+            where code = #{code}
+    </select>
+
+    <select id="getRoleCodeByEmployeeId" resultType="java.lang.String">
+        select r.code
+        from role r
+        inner join employee_role er on r.id = er.role_id
+        where er.employee_id=#{employeeId}
+        and r.status = 1
     </select>
 
 </mapper>

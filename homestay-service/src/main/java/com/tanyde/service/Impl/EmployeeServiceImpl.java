@@ -41,24 +41,24 @@ public class EmployeeServiceImpl implements EmployeeService {
      **/
     @Override
     public Employee login(EmployeeLoginDTO employeeLoginDTO) {
-        String username= employeeLoginDTO.getUsername();
-        String password= employeeLoginDTO.getPassword();
+        String username = employeeLoginDTO.getUsername();
+        String password = employeeLoginDTO.getPassword();
 
         //1.查询用户名数据库中的数据
-        Employee employee=employeeMapper.getByUsername(username);
+        Employee employee = employeeMapper.getByUsername(username);
         //2.处理各种异常
-            //账号不存在
-        if(employee==null){
+        //账号不存在
+        if (employee == null) {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
         //密码对比
         //对前端传来密码进行MD5签名
-        password= DigestUtils.md5DigestAsHex(password.getBytes());
-        if(!password.equals(employee.getPassword())){
+        password = DigestUtils.md5DigestAsHex(password.getBytes());
+        if (!password.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
         }
-        if(employee.getStatus().equals(StatusConstant.DISABLE)){
+        if (employee.getStatus().equals(StatusConstant.DISABLE)) {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
@@ -77,16 +77,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(EmployeeDTO employeeDTO) {
-        Employee employee=new Employee();
+        Employee employee = new Employee();
         //对象属性拷贝
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         //获取当前用户id
         Long roleId = employeeDTO.getRoleId();
 
         //密码加密
         if (employee.getPassword() != null) {
             employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
-        }else{
+        } else {
             //密码为空则设置默认密码123456
             //TODO:此处123456应为加密后的密码
             employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
@@ -94,7 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //添加员工
         employeeMapper.insert(employee);
         //添加员工角色关系
-        employeeMapper.addEmployeeRole(employee.getId(),roleId);
+        employeeMapper.addEmployeeRole(employee.getId(), roleId);
     }
 
     /**
@@ -109,21 +109,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     public PageResult pageQuery(EmployeePageQueryDTO employeePQDTO) {
         //分页查询
         PageHelper.startPage(employeePQDTO.getPage(), employeePQDTO.getPageSize());
-        Page<EmployeePageVO> page=employeeMapper.pageQuery(employeePQDTO);
+        Page<EmployeePageVO> page = employeeMapper.pageQuery(employeePQDTO);
 
-        long total=page.getTotal();
-        List<EmployeePageVO> records=page.getResult();
-        return new PageResult(total,records);
+        long total = page.getTotal();
+        List<EmployeePageVO> records = page.getResult();
+        return new PageResult(total, records);
     }
 
     /**
-     *启用禁用员工账号
+     * 启用禁用员工账号
+     *
      * @param status
      * @param id
      */
     @Override
     public void startOrStop(Integer status, Long id) {
-        Employee employee=Employee.builder()
+        Employee employee = Employee.builder()
                 .status(status)
                 .id(id)
                 .build();
@@ -141,16 +142,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeVO getById(Long id) {
         //获得员工信息
-        Employee employee=employeeMapper.getById(id);
+        Employee employee = employeeMapper.getById(id);
         //获得员工角色信息
-        Long roleId=employeeMapper.getRoleIdById(id);
+        Long roleId = employeeMapper.getRoleIdById(id);
         //封装成VO
-        EmployeeVO employeeVO=new EmployeeVO();
-        BeanUtils.copyProperties(employee,employeeVO);
+        EmployeeVO employeeVO = new EmployeeVO();
+        BeanUtils.copyProperties(employee, employeeVO);
         employeeVO.setRoleId(roleId);
 
         return employeeVO;
     }
+
 
     /**
      * 编辑员工信息
@@ -164,15 +166,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(rollbackFor = Exception.class)
     public void update(EmployeeDTO employeeDTO) {
         //创建员工对象
-        Employee employee =new Employee();
+        Employee employee = new Employee();
         //拷贝属性
-        BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO, employee);
         //修改员工信息
         employeeMapper.update(employee);
         //修改员工角色关系
         Long roleId = employeeDTO.getRoleId();
         Long employeeId = employeeDTO.getId();
-        employeeMapper.updateEmployeeRole(employeeId,roleId);
+        employeeMapper.updateEmployeeRole(employeeId, roleId);
 
     }
 
@@ -187,15 +189,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void editPassword(PasswordEditDTO passwordEditDTO) {
         //根据id获得信息
-        Employee employee=employeeMapper.getById(passwordEditDTO.getEmpId());
+        Employee employee = employeeMapper.getById(passwordEditDTO.getEmpId());
         //将用户输入的旧密码进行MD5签名方便对比
-        String oldPasswordMD5= DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
+        String oldPasswordMD5 = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
         //若相同则进行修改密码逻辑，否则抛出异常
-        if(employee.getPassword().equals(oldPasswordMD5)){
+        if (employee.getPassword().equals(oldPasswordMD5)) {
             //将之前取出的employee中的密码改为MD5签名后的新密码
             employee.setPassword(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()));
             employeeMapper.update(employee);
-        }else{
+        } else {
             //抛出密码修改错误异常
             throw new PasswordEditFailedException(MessageConstant.PASSWORD_EDIT_FAILED);
         }
@@ -203,6 +205,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 删除员工
+     *
      * @param id
      */
     @Override

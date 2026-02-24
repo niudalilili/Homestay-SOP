@@ -1,5 +1,6 @@
 package com.tanyde.controller.admin;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.tanyde.dto.LoginDTO.RoleDTO;
 import com.tanyde.dto.LoginDTO.RolePageQueryDTO;
 import com.tanyde.result.PageResult;
@@ -29,6 +30,7 @@ public class RoleController {
      **/
     @PostMapping
     @Operation(summary = "添加角色")
+    @SaCheckPermission("system:role:add")
     public Result addRole(@RequestBody RoleDTO roleDTO) {
         roleService.add(roleDTO);
         log.info("添加角色:{}", roleDTO);
@@ -45,6 +47,7 @@ public class RoleController {
      **/
     @PostMapping("/update")
     @Operation(summary = "修改角色")
+    @SaCheckPermission("system:role:update")
     public Result updateRole(@RequestBody RoleDTO roleDTO) {
         roleService.update(roleDTO);
         log.info("修改角色:{}", roleDTO);
@@ -61,7 +64,8 @@ public class RoleController {
      **/
     @DeleteMapping("/{id}")
     @Operation(summary = "删除角色")
-    public Result deleteRole(@RequestBody Long id) {
+    @SaCheckPermission("system:role:delete")
+    public Result deleteRole(@PathVariable Long id) {
         roleService.delete(id);
         log.info("删除角色:{}", id);
 
@@ -77,6 +81,7 @@ public class RoleController {
      **/
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询角色")
+    @SaCheckPermission("system:role:query")
     public Result<RoleVO> selectById(@PathVariable Long id) {
         RoleVO roleVO = roleService.getById(id);
         log.info("根据id:{}查询角色:{}", id, roleVO);
@@ -93,6 +98,7 @@ public class RoleController {
      **/
     @GetMapping("/page")
     @Operation(summary = "分页查询角色")
+    @SaCheckPermission("system:role:query")
     public PageResult selectPage(@RequestBody RolePageQueryDTO rolePQDTO) {
         PageResult pageResult = roleService.pageQuery(rolePQDTO);
         log.info("分页查询角色:{}", rolePQDTO);
@@ -102,5 +108,3 @@ public class RoleController {
     }
 
 }
-
-

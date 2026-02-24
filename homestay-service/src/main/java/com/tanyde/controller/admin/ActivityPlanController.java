@@ -1,5 +1,6 @@
 package com.tanyde.controller.admin;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.result.PageResult;
@@ -29,7 +30,6 @@ public class ActivityPlanController {
     @Autowired
     private ActivityPlanService activityPlanService;
 
-
     /**
      * 新增活动方案
      *
@@ -40,6 +40,7 @@ public class ActivityPlanController {
      **/
     @PostMapping
     @Operation(summary = "新增活动方案")
+    @SaCheckPermission("activity:add")
     public Result save(@RequestBody ActivityPlanDTO activityPlanDTO) {
         log.info("新增活动方案:{}", activityPlanDTO);
         activityPlanService.save(activityPlanDTO);
@@ -56,6 +57,7 @@ public class ActivityPlanController {
      **/
     @DeleteMapping("/batch")
     @Operation(summary = "根据ids删除活动方案")
+    @SaCheckPermission("activity:delete")
     public Result deleteById(@RequestBody List<Long> ids) {
         log.info("根据id删除活动方案:{}", ids);
         activityPlanService.deleteByIds(ids);
@@ -72,6 +74,7 @@ public class ActivityPlanController {
      **/
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询活动方案")
+    @SaCheckPermission("activity:query")
     public Result<ActivityPlanDTO> selectById(@PathVariable Long id) {
         ActivityPlanDTO activityPlanDTO = activityPlanService.selectById(id);
         log.info("根据id:{}查询活动方案:{}", id, activityPlanDTO);
@@ -85,6 +88,7 @@ public class ActivityPlanController {
      **/
     @GetMapping("/page")
     @Operation(summary = "分页查询活动方案")
+    @SaCheckPermission("activity:query")
     public Result<PageResult> page(ActivityPlanPageQueryDTO activityPlanPageQueryDTO) {
         PageResult pageResult = activityPlanService.pageQuery(activityPlanPageQueryDTO);
         log.info("分页查询活动方案:{}", pageResult);
@@ -98,6 +102,7 @@ public class ActivityPlanController {
      */
     @GetMapping("/stats")
     @Operation(summary = "仪表盘统计数据")
+    @SaCheckPermission("activity:query")
     public Result<Map<String, Object>> stats() {
         return Result.success(activityPlanService.getDashboardStats());
     }
@@ -109,6 +114,7 @@ public class ActivityPlanController {
      **/
     @PutMapping("/update")
     @Operation(summary = "更新活动方案")
+    @SaCheckPermission("activity:update")
     public Result update(@RequestBody ActivityPlanDTO activityPlanDTO) {
         activityPlanService.update(activityPlanDTO);
         log.info("更新活动方案:{}", activityPlanDTO);
@@ -123,6 +129,7 @@ public class ActivityPlanController {
      **/
     @PutMapping("/status/{status}")
     @Operation(summary = "更新活动方案状态")
+    @SaCheckPermission("activity:status")
     public Result changeStatus(@PathVariable Integer status, @RequestParam Long id) {
         activityPlanService.changeStatus(id, status);
         return Result.success();
