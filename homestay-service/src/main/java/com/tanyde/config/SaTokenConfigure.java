@@ -19,7 +19,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                     //登录校验--拦截所有路
                     SaRouter.match("/**", r -> StpUtil.checkLogin());
                     //角色检验--拦截admin下的路由，必须具备admin 角色或者 super-admin 角色才可以通过认证
-                    SaRouter.match("/admin/**",r->StpUtil.checkRoleOr("admin","super-admin"));
+                    //SaRouter.match("/admin/**",r->StpUtil.checkRoleOr("admin","super-admin"));
                 }))
                 .addPathPatterns("/**")
                 // 放行不需要登录的接口

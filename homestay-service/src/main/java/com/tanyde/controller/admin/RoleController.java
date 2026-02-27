@@ -99,12 +99,12 @@ public class RoleController {
     @GetMapping("/page")
     @Operation(summary = "分页查询角色")
     @SaCheckPermission("system:role:query")
-    public PageResult selectPage(@RequestBody RolePageQueryDTO rolePQDTO) {
+    public Result<PageResult> selectPage(RolePageQueryDTO rolePQDTO) {
         PageResult pageResult = roleService.pageQuery(rolePQDTO);
         log.info("分页查询角色:{}", rolePQDTO);
         log.info("分页查询结果:{}", pageResult);
 
-        return pageResult;
+        return Result.success(pageResult);
     }
 
 }

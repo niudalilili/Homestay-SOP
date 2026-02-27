@@ -9,6 +9,7 @@ import com.tanyde.enumeration.OperationType;
 import com.tanyde.vo.EmployeePageVO;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -44,8 +45,7 @@ public interface EmployeeMapper {
      * @return void
      * @date 2026/2/23 23:08
      **/
-    @AutoFill(value = OperationType.INSERT)
-    void addEmployeeRole(Long id, Long roleId);
+    void addEmployeeRole(@Param("id")Long id, @Param("roleId") Long roleId);
 
     /**
      * 分页查询
@@ -107,8 +107,8 @@ public interface EmployeeMapper {
      *
      * @return
      */
-    @AutoFill(value = OperationType.UPDATE)
-    void updateEmployeeRole(Long employeeId, Long roleId);
+    void updateEmployeeRole(@Param("employeeId") Long employeeId,
+                            @Param("roleId") Long roleId);
 
     /**
      * 根据角色id查询员工数量

@@ -3,6 +3,7 @@ package com.tanyde.controller.admin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaCheckRole;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.tanyde.dto.LoginDTO.EmployeeDTO;
 import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;

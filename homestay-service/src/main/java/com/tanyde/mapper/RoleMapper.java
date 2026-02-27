@@ -33,7 +33,6 @@ public interface RoleMapper {
      * @return void
      * @date 2026/2/23 20:58
      **/
-    @AutoFill(value = OperationType.INSERT)
     void addRolePermission(@Param("id") Long id,
                            @Param("permissionIds")List<Long> permissionIds);
 

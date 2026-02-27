@@ -53,5 +53,12 @@
             and p.status=1
     </select>
 
+    <select id="findAll" resultType="com.tanyde.entity.LoginPO.Permission">
+        select id, name, code, description, status, create_time, update_time
+        from permission
+        where status = 1
+        order by code asc
+    </select>
+
 
 </mapper>

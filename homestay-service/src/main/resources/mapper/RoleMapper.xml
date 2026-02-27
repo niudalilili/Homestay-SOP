@@ -13,10 +13,10 @@
 
     <insert id="addRolePermission">
         insert into role_permission
-            (role_id, permission_id, create_time, update_time, create_user, update_user)
+            (role_id, permission_id)
         values
             <foreach collection="permissionIds" item="permissionId" separator=",">
-                (#{id},#{permissionId},#{createTime},#{updateTime},#{createUser},#{updateUser})
+                (#{id},#{permissionId})
             </foreach>
     </insert>
 

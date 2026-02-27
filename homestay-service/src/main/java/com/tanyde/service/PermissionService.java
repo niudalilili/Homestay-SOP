@@ -3,6 +3,7 @@ package com.tanyde.service;
 import com.tanyde.dto.LoginDTO.PermissionDTO;
 import com.tanyde.dto.LoginDTO.PermissionPageQueryDTO;
 import com.tanyde.result.PageResult;
+import com.tanyde.vo.PermissionGroupVO;
 
 import java.util.List;
 
@@ -43,5 +44,13 @@ public interface PermissionService {
      * @date 2026/2/22 16:29
      **/
     List<String> listAll();
+
+    /**
+     * 获取权限树
+     *
+     * @return java.util.List<com.tanyde.vo.PermissionGroupVO>
+     * @date 2026/2/24
+     **/
+    List<PermissionGroupVO> getTree();
 
 }

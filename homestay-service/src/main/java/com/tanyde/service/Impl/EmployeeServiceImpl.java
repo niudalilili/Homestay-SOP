@@ -88,8 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
         } else {
             //密码为空则设置默认密码123456
-            //TODO:此处123456应为加密后的密码
-            employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+            employee.setPassword(DigestUtils.md5DigestAsHex("e10adc3949ba59abbe56e057f20f883e".getBytes()));
         }
         //添加员工
         employeeMapper.insert(employee);

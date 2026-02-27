@@ -25,4 +25,7 @@ public interface PermissionMapper {
 
     //根据员工id查询权限codes
     List<String> getCodesByEmployeeId(Long employeeId);
+
+    //查询所有权限
+    List<Permission> findAll();
 }
