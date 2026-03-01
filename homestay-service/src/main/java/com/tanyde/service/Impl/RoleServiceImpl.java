@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.tanyde.exception.BaseException;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class RoleServiceImpl implements RoleService {
         // 检查角色编码是否已存在
         String code = role.getCode();
         if (roleMapper.countByCode(code) > 0) {
-            throw new RuntimeException("角色编码已存在");
+            throw new BaseException("角色编码已存在");
         }
         // 添加角色
         roleMapper.add(role);
@@ -84,10 +85,15 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
-        //检查是否还有此角色的用户
+        //获取角色信息
+        Role role=roleMapper.getById(id);
+        //检查是否还有此角色的用户并且是否为超级管理员
         if (employeeMapper.countByRoleId(id) > 0) {
-            throw new RuntimeException("此角色下有员工，不能删除");
-        } else {
+            throw new BaseException("此角色下有员工，不能删除");
+        }else if("super_admin".equals(role.getCode())){
+            throw new BaseException("超级管理员不能删除");
+        }
+        else {
             // 删除角色
             roleMapper.deleteRole(id);
             // 删除角色权限关系

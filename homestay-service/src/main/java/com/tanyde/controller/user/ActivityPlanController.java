@@ -25,7 +25,7 @@ public class ActivityPlanController {
      **/
     @GetMapping("/{id}")
     @Operation(summary = "根据id查询方案")
-    public Result<ActivityPlanDTO> selectById(@PathVariable Integer id) {
+    public Result<ActivityPlanDTO> selectById(@PathVariable Long id) {
 
 
         return Result.success();

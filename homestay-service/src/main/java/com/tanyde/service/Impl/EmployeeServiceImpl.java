@@ -88,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
         } else {
             //密码为空则设置默认密码123456
-            employee.setPassword(DigestUtils.md5DigestAsHex("e10adc3949ba59abbe56e057f20f883e".getBytes()));
+            employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
         }
         //设置默认状态
         if(employee.getStatus() == null){
@@ -196,6 +196,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeMapper.getById(passwordEditDTO.getEmpId());
         //将用户输入的旧密码进行MD5签名方便对比
         String oldPasswordMD5 = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
+        //账号不存在
+        if (employee == null) {
+            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+        }
         //若相同则进行修改密码逻辑，否则抛出异常
         if (employee.getPassword().equals(oldPasswordMD5)) {
             //将之前取出的employee中的密码改为MD5签名后的新密码

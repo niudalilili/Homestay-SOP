@@ -101,7 +101,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         if (!activitySteps.isEmpty()) {
             int rows = activityStepMapper.batchInsert((ArrayList<ActivityStep>) activitySteps);
             if (rows != activitySteps.size()) {
-                throw new IllegalStateException("步骤批量写入数量不一致");
+                throw new BaseException("步骤批量写入数量不一致");
             }
         }
     }
@@ -124,8 +124,10 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         // 修复：删除前检查状态，禁止删除已上线活动
         for (Long id : ids) {
             ActivityPlan plan = activityPlanMapper.selectById(id);
+            //当planname为null时，显示id
+            String planName = plan.getPlanName()!= null ? plan.getPlanName() : "ID:"+id;
             if (plan != null && ActivityStatus.ONLINE.getCode().equals(plan.getStatus())) {
-                throw new BaseException("活动【" + plan.getPlanName() + "】处于上线状态，无法删除");
+                throw new BaseException("活动【" + planName + "】处于上线状态，无法删除");
             }
         }
         //删主表
@@ -147,8 +149,14 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     public ActivityPlanDTO selectById(Long id) {
         ActivityPlanDTO activityPlanDTO = new ActivityPlanDTO();
+        //查主表
+        ActivityPlan plan = activityPlanMapper.selectById(id);
+        //验证活动方案是否存在
+        if (plan == null) {
+            throw new BaseException("活动方案不存在");
+        }
         //查主表并赋值
-        BeanUtils.copyProperties(activityPlanMapper.selectById(id), activityPlanDTO);
+        BeanUtils.copyProperties(plan, activityPlanDTO);
         //查关联表
         ActivityPlanContentDTO activityPlanContentDTO = new ActivityPlanContentDTO();
         BeanUtils.copyProperties(activityPlanContentMapper.selectByPlanId(id), activityPlanContentDTO);
@@ -175,34 +183,18 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
      **/
     @Override
     public PageResult pageQuery(ActivityPlanPageQueryDTO dto) {
+        //当分页参数为null时，设置默认值
+        Integer pageDto = dto.getPage() == null ? 1 : dto.getPage();
+        Integer pageSize = dto.getPageSize() == null ? 10 : dto.getPageSize();
         //设置分页参数
-        PageHelper.startPage(dto.getPage(), dto.getPageSize());
+        PageHelper.startPage(pageDto, pageSize);
         //获得数据库数据
         Page<ActivityPlan> page = activityPlanMapper.pageQuery(dto);
         //返回pageResult
         return new PageResult(page.getTotal(), page.getResult());
     }
 
-    /**
-     * 仪表盘统计数据
-     */
-    @Override
-    public Map<String, Object> getDashboardStats() {
-        int totalPlans = activityPlanMapper.countAll();
-        Integer totalEmployees = employeeMapper.count();
-        LocalDate today = LocalDate.now();
-        LocalDate firstDay = today.withDayOfMonth(1);
-        LocalDateTime startTime = firstDay.atStartOfDay();
-        LocalDateTime endTime = firstDay.plusMonths(1).atStartOfDay();
-        Integer monthlyNewPlans = activityPlanMapper.countByCreateTimeRange(startTime, endTime);
 
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalPlans", totalPlans);
-        stats.put("totalEmployees", totalEmployees == null ? 0 : totalEmployees);
-        stats.put("monthlyNewPlans", monthlyNewPlans == null ? 0 : monthlyNewPlans);
-        stats.put("systemVisits", 0);
-        return stats;
-    }
 
     /**
      * 更新活动方案
@@ -216,7 +208,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     public void update(ActivityPlanDTO activityPlanDTO) {
         // 检查ID是否为空
         if (activityPlanDTO.getId() == null) {
-            throw new IllegalArgumentException("活动方案ID不能为空");
+            throw new BaseException("活动方案ID不能为空");
         }
         //1.更新主表
         //复制
@@ -225,7 +217,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         //更新数据库
         int updatedRows = activityPlanMapper.update(activityPlan);
         if (updatedRows == 0) {
-            throw new IllegalStateException("活动方案不存在或更新失败");
+            throw new BaseException("活动方案不存在或更新失败");
         }
 
         //获得id
@@ -277,7 +269,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
                 int rows = activityStepMapper.batchInsert(activitySteps);
                 //检查批量插入数量是否与steps数量一样
                 if (rows != activitySteps.size()) {
-                    throw new IllegalStateException("步骤批量写入数量不一致");
+                    throw new BaseException("步骤批量写入数量不一致");
                 }
             }
         }
@@ -309,5 +301,24 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         if (rows == 0) {
             throw new BaseException("状态更新失败");
         }
+    }
+    /**
+     * 仪表盘统计数据
+     */
+    @Override
+    public Map<String, Object> getDashboardStats() {
+        int totalPlans = activityPlanMapper.countAll();
+        Integer totalEmployees = employeeMapper.count();
+        LocalDate today = LocalDate.now();
+        LocalDate firstDay = today.withDayOfMonth(1);
+        LocalDateTime startTime = firstDay.atStartOfDay();
+        LocalDateTime endTime = firstDay.plusMonths(1).atStartOfDay();
+        Integer monthlyNewPlans = activityPlanMapper.countByCreateTimeRange(startTime, endTime);
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalPlans", totalPlans);
+        stats.put("totalEmployees", totalEmployees == null ? 0 : totalEmployees);
+        stats.put("monthlyNewPlans", monthlyNewPlans == null ? 0 : monthlyNewPlans);
+        return stats;
     }
 }
