@@ -1,6 +1,8 @@
 package com.tanyde.service.Impl;
 
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpInterface;
+import cn.dev33.satoken.stp.StpUtil;
 import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.service.EmployeeService;
 import com.tanyde.service.PermissionService;
@@ -35,9 +37,17 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
         log.info("开始获取用户权限，loginId: {}, loginType: {}", loginId, loginType);
-        //调用Service查询用户信息
+        //尝试从Session中获取缓存的权限列表
+        SaSession session = StpUtil.getSessionByLoginId(loginId);
+        if(session != null && session.has("permissions")){
+            List< String>cachedPermissions = (List<String>) session.get("permissions");
+            log.info("从Session中获取权限列表: {}", cachedPermissions);
+            return cachedPermissions;
+        }
+        //Session中没有缓存，调用Service查询并缓存
         List<String> codes=permissionService.getCodesByIds(Long.valueOf(loginId.toString()));
-        log.info("用户权限列表: {}", codes);
+        session.set("permissions", codes);
+        log.info("用户权限列表(从数据库中查询并缓存): {}", codes);
         return codes;
     }
 
