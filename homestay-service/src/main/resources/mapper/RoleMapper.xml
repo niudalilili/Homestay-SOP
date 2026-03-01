@@ -4,7 +4,7 @@
 <mapper namespace="com.tanyde.mapper.RoleMapper">
 
 
-    <insert id="add">
+    <insert id="add" parameterType="com.tanyde.entity.LoginPO.Role" useGeneratedKeys="true" keyProperty="id">
         insert into role(name, code, description, status,
                          create_time, update_time, create_user, update_user)
         values(#{name}, #{code}, #{description}, #{status},

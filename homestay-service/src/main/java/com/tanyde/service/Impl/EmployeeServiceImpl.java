@@ -90,6 +90,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             //密码为空则设置默认密码123456
             employee.setPassword(DigestUtils.md5DigestAsHex("e10adc3949ba59abbe56e057f20f883e".getBytes()));
         }
+        //设置默认状态
+        if(employee.getStatus() == null){
+            employee.setStatus(StatusConstant.ENABLE);
+        }
+
         //添加员工
         employeeMapper.insert(employee);
         //添加员工角色关系
