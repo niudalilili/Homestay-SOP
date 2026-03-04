@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.FavoriteMapper">
+
+    <!-- 分页查询收藏方案 -->
+    <select id="page" resultType="com.tanyde.entity.FavoritePO.Favorite">
+        SELECT id,user_id,activity_id,favorite_time
+        FROM activity_favorite WHERE
+        user_id = #{userId}
+        <if test="activityId != null">
+            AND activity_id = #{activityId}
+        </if>
+        ORDER BY
+        favorite_time DESC
+    </select>
+
+    <!-- 添加收藏 -->
+    <insert id="insert" parameterType="com.tanyde.entity.FavoritePO.Favorite">
+        INSERT INTO activity_favorite (user_id,activity_id, favorite_time)
+        VALUES (#{userId}, #{activityId}, #{favoriteTime})
+    </insert>
+
+    <!-- 取消收藏 -->
+    <delete id="delete">
+        DELETE FROM activity_favorite
+        WHERE user_id = #{userId} AND activity_id = #{activityId}
+    </delete>
+
+    <!-- 根据用户ID和方案ID查询收藏 -->
+    <select id="selectByUserIdAndPlanId" resultType="com.tanyde.entity.FavoritePO.Favorite">
+        SELECT id, user_id, activity_id, favorite_time
+        FROM activity_favorite
+        WHERE user_id = #{userId} AND activity_id = #{activityId}
+    </select>
+
+</mapper>

@@ -122,6 +122,15 @@
         where create_time &gt;= #{startTime}
           and create_time &lt; #{endTime}
     </select>
+    <!-- 按季查询活动方案 -->
+    <select id="getBySeason" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
+        select id, plan_name, min_age, max_age,
+               activity_category, season, duration,
+               scene, status,
+               create_time, update_time, create_user, update_user
+        from activity_plan
+        where (season &amp; #{season})!=0
+    </select>
 
 
 </mapper>

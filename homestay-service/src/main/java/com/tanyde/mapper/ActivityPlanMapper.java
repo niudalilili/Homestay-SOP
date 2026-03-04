@@ -3,6 +3,7 @@ package com.tanyde.mapper;
 
 import com.github.pagehelper.Page;
 import com.tanyde.annotation.AutoFill;
+import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.entity.ActivityPO.ActivityPlan;
 import com.tanyde.enumeration.OperationType;
@@ -77,4 +78,13 @@ public interface ActivityPlanMapper {
      * @return 数量
      */
     Integer countByCreateTimeRange(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+
+    /**
+     * 按季查询活动方案
+     *
+     * @param season 季
+     * @return 活动方案
+     */
+    List<ActivityPlan> getBySeason(Integer season);
 }

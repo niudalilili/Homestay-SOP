@@ -72,4 +72,13 @@ public interface ActivityPlanService {
      * @return 包含 totalPlans/totalEmployees/monthlyNewPlans/systemVisits 的键值对
      */
     Map<String, Object> getDashboardStats();
+
+    /**
+     * 获取推荐季节方案
+     *
+     * @param season
+     * @return
+     * @date:
+     **/
+    List<ActivityPlanDTO> getRecommendPlan(Integer season, Integer limit);
 }

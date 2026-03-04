@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ActivityPlanServiceImpl implements ActivityPlanService {
@@ -320,5 +321,25 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         stats.put("totalEmployees", totalEmployees == null ? 0 : totalEmployees);
         stats.put("monthlyNewPlans", monthlyNewPlans == null ? 0 : monthlyNewPlans);
         return stats;
+    }
+
+    /**
+     * 获取推荐季节方案
+     *
+     * @param season
+     * @return
+     */
+    @Override
+    public List<ActivityPlanDTO> getRecommendPlan(Integer season, Integer limit) {
+        List<ActivityPlan> activityPlans = activityPlanMapper.getBySeason(season);
+        List<ActivityPlanDTO> activityPlanDTOs = activityPlans.stream()
+                .map(activityPlan -> {
+                    ActivityPlanDTO activityPlanDTO = new ActivityPlanDTO();
+                    BeanUtils.copyProperties(activityPlan, activityPlanDTO);
+                    return activityPlanDTO;
+                })
+                .limit(limit)
+                .collect(Collectors.toList());
+        return activityPlanDTOs;
     }
 }
