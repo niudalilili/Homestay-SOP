@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tanyde.mapper.FeedbackMapper">
+
+    <!-- 分页查询反馈 -->
+    <select id="page" resultType="com.tanyde.entity.FeedbackPO.Feedback">
+        select id, record_id, activity_id, rating, detail, submission_time, status
+        from activity_feedback
+        <where>
+            <!-- 执行记录筛选 -->
+            <if test="recordId != null">
+                and record_id = #{recordId}
+            </if>
+            <!-- 方案筛选 -->
+            <if test="activityId != null">
+                and activity_id = #{activityId}
+            </if>
+            <!-- 状态筛选 -->
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        <!-- 按提交时间倒序 -->
+        order by submission_time desc
+    </select>
+
+    <!-- 新增反馈 -->
+    <insert id="insert" parameterType="com.tanyde.entity.FeedbackPO.Feedback">
+        insert into activity_feedback
+        (id,record_id, activity_id, rating, detail, submission_time, status)
+        values
+        (#{id},#{recordId}, #{activityId}, #{rating}, #{detail}, #{submissionTime}, #{status})
+    </insert>
+
+</mapper>
