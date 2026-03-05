@@ -25,6 +25,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 // 放行不需要登录的接口
                 .excludePathPatterns(
                         "/admin/employee/login",
+                        "/auth/login",
                         "/user/user/login",
                         // 放行 Swagger/Knife4j 文档资源
                         "/doc.html",

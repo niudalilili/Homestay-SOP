@@ -20,6 +20,14 @@ public interface EmployeeService {
      **/
     Employee login(EmployeeLoginDTO employeeLoginDTO);
 
+    /**
+     * 微信登录
+     *
+     * @param openid 微信openid
+     * @return 登录用户
+     */
+    Employee wxLogin(String openid);
+
 
     /**
      * 保存员工信息

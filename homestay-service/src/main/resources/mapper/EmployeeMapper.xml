@@ -8,12 +8,22 @@
                where employee_id=#{employeeId}
     </delete>
 
+    <!-- 根据用户名查询 -->
     <select id="getByUsername" resultType="com.tanyde.entity.LoginPO.Employee">
         select id, username, name,
-               password, status,
+               password, openid, login_type, status,
                create_time, update_time, create_user, update_user
         from employee
         where username=#{username}
+    </select>
+
+    <!-- 根据openid查询 -->
+    <select id="getByOpenid" resultType="com.tanyde.entity.LoginPO.Employee">
+        select id, username, name,
+               password, openid, login_type, status,
+               create_time, update_time, create_user, update_user
+        from employee
+        where openid=#{openid}
     </select>
 
     <select id="pageQuery" resultType="com.tanyde.vo.EmployeePageVO">
@@ -47,11 +57,11 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into employee(
             id, username, name,
-            password, status,
+            password, openid, login_type, status,
             create_time, update_time, create_user, update_user
         ) VALUES(
                  #{id}, #{username}, #{name},
-                 #{password}, #{status},
+                 #{password}, #{openid}, #{loginType}, #{status},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
@@ -67,6 +77,8 @@
             <if test="name != null">name=#{name},</if>
             <if test="username != null">username=#{username},</if>
             <if test="password != null">password=#{password},</if>
+            <if test="openid != null">openid=#{openid},</if>
+            <if test="loginType != null">login_type=#{loginType},</if>
             <if test="status != null">status=#{status},</if>
             <if test="updateTime != null">update_time= #{updateTime},</if>
             <if test="updateUser != null">update_user= #{updateUser},</if>

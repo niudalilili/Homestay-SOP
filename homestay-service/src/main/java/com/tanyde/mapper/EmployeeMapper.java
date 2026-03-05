@@ -25,6 +25,14 @@ public interface EmployeeMapper {
      **/
     Employee getByUsername(String username);
 
+    /**
+     * 根据openid查询用户
+     *
+     * @param openid 微信openid
+     * @return 用户信息
+     */
+    Employee getByOpenid(String openid);
+
 
     /**
      * 插入员工数据

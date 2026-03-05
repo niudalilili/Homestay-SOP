@@ -53,16 +53,44 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         //密码对比
         //对前端传来密码进行MD5签名
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-        if (!password.equals(employee.getPassword())) {
-            //密码错误
-            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        if (employee.getPassword() != null) {
+            password = DigestUtils.md5DigestAsHex(password.getBytes());
+            if (!password.equals(employee.getPassword())) {
+                //密码错误
+                throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+            }
+        } else {
+            throw new PasswordErrorException(MessageConstant.PASSWORD_EMPTY);
         }
         if (employee.getStatus().equals(StatusConstant.DISABLE)) {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
         //3.返回实体对象
+        return employee;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Employee wxLogin(String openid) {
+        // 校验openid
+        if (openid == null || openid.isEmpty()) {
+            throw new BaseException("openid不能为空");
+        }
+        // 查询是否已存在
+        Employee employee = employeeMapper.getByOpenid(openid);
+        if (employee == null) {
+            // 不存在则创建新用户
+            employee = Employee.builder()
+                    .username(openid)
+                    .name("微信用户")
+                    .openid(openid)
+                    .loginType(1)
+                    .status(StatusConstant.ENABLE)
+                    .build();
+            employeeMapper.insert(employee);
+        }
+        // 返回登录用户
         return employee;
     }
 
@@ -84,11 +112,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long roleId = employeeDTO.getRoleId();
 
         //密码加密
-        if (employee.getPassword() != null) {
+        if (employee.getPassword() != null && !employee.getPassword().isEmpty()) {
             employee.setPassword(DigestUtils.md5DigestAsHex(employee.getPassword().getBytes()));
         } else {
             //密码为空则设置默认密码123456
             employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        }
+        
+        //设置默认登录类型
+        if (employee.getLoginType() == null) {
+            employee.setLoginType(0);
         }
         //设置默认状态
         if(employee.getStatus() == null){

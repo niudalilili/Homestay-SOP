@@ -27,6 +27,10 @@ public class Employee implements Serializable {
     private String name;
     @Schema(description = "密码（加密存储")
     private String password;
+    @Schema(description = "微信openid")
+    private String openid;
+    @Schema(description = "登录类型：0-传统密码，1-微信openid")
+    private Integer loginType;
     @Schema(description = "状态（0-禁用 1-正常）")
     private Integer status;
 

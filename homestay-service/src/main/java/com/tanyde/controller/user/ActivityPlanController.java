@@ -44,7 +44,7 @@ public class ActivityPlanController {
      **/
     @GetMapping("/list")
     @Operation(summary = "分页查询活动方案")
-    public Result<PageResult> page(@RequestBody ActivityPlanPageQueryDTO dto) {
+    public Result<PageResult> page(ActivityPlanPageQueryDTO dto) {
         PageResult pageResult = activityPlanService.pageQuery(dto);
         log.info("分页查询活动方案：{}", pageResult);
         return Result.success(pageResult);
@@ -58,7 +58,7 @@ public class ActivityPlanController {
      **/
     @GetMapping("/recommend")
     @Operation(summary = "获得首页推荐季节方案")
-    public Result<List<ActivityPlanDTO>>getRecommendPlan(@RequestBody Integer season,@RequestBody Integer limit){
+    public Result<List<ActivityPlanDTO>>getRecommendPlan(Integer season,Integer limit){
         List<ActivityPlanDTO> list= activityPlanService.getRecommendPlan(season, limit);
         log.info("获得首页推荐季节方案：{}", list);
         return Result.success(list);
