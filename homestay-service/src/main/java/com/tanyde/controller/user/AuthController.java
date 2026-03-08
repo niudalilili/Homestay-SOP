@@ -6,6 +6,7 @@ import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.result.Result;
 import com.tanyde.service.EmployeeService;
 import com.tanyde.service.RoleService;
+import com.tanyde.service.WxAuthService;
 import com.tanyde.vo.AuthLoginVO;
 import com.tanyde.vo.UserInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,11 +30,17 @@ public class AuthController {
     @Autowired
     private RoleService roleService;
 
+    @Autowired
+    private WxAuthService wxAuthService;
+
     @PostMapping("/login")
     @Operation(summary = "微信登录")
     public Result<AuthLoginVO> login(@RequestBody WxLoginDTO wxLoginDTO) {
-        // 调用服务完成微信登录或注册
-        Employee employee = employeeService.wxLogin(wxLoginDTO.getOpenid());
+        String openid = wxLoginDTO.getOpenid();
+        if (openid == null || openid.isEmpty()) {
+            openid = wxAuthService.getOpenidByCode(wxLoginDTO.getCode());
+        }
+        Employee employee = employeeService.wxLogin(openid);
         // 记录登录状态
         StpUtil.login(employee.getId(), "user");
         // 获取角色信息

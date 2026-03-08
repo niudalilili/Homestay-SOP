@@ -11,4 +11,6 @@ public class WxLoginDTO implements Serializable {
     // 微信用户唯一标识
     @Schema(description = "微信openid")
     private String openid;
+    @Schema(description = "微信登录code")
+    private String code;
 }

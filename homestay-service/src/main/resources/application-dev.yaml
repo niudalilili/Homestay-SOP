@@ -1,4 +1,7 @@
 hm:
   db:
-    host: 192.168.230.128
+    host: 192.168.230.12
     pw: 123
+wx:
+  appid: wx25b3fa1529c5f822
+  secret: 0012e7ed352908c4ca18dc4754de1ceb

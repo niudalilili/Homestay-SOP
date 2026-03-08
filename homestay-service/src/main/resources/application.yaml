@@ -28,6 +28,10 @@ mybatis:
     #开启驼峰命名
     map-underscore-to-camel-case: true
 
+wx:
+  appid: ${wx.appid:}
+  secret: ${wx.secret:}
+
 ############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
 sa-token:
   # token 名称（同时也是 cookie 名称）
