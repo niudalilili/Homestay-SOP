@@ -1,6 +1,8 @@
 package com.tanyde.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.tanyde.dto.LoginDTO.UserNameUpdateDTO;
+import com.tanyde.exception.BaseException;
 import com.tanyde.result.Result;
 import com.tanyde.service.EmployeeService;
 import com.tanyde.service.RoleService;
@@ -10,7 +12,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,6 +37,32 @@ public class UserController {
         EmployeeVO employeeVO = employeeService.getById(userId);
         String role = roleService.getRoleCodeByEmployeeId(userId);
         // 组装返回数据
+        UserInfoVO userInfoVO = UserInfoVO.builder()
+                .id(employeeVO.getId())
+                .name(employeeVO.getName())
+                .role(role)
+                .empId(String.valueOf(employeeVO.getId()))
+                .build();
+        return Result.success(userInfoVO);
+    }
+
+    /**
+     * 更新当前用户姓名
+     *
+     * @param userNameUpdateDTO 更新参数
+     * @return 当前用户信息
+     */
+    @PutMapping("/userInfo")
+    @Operation(summary = "更新当前用户姓名")
+    public Result<UserInfoVO> updateUserInfo(@RequestBody UserNameUpdateDTO userNameUpdateDTO) {
+        String name = userNameUpdateDTO.getName();
+        if (name == null || name.trim().isEmpty()) {
+            throw new BaseException("用户名不能为空");
+        }
+        Long userId = StpUtil.getLoginIdAsLong();
+        employeeService.updateUserName(userId, name.trim());
+        EmployeeVO employeeVO = employeeService.getById(userId);
+        String role = roleService.getRoleCodeByEmployeeId(userId);
         UserInfoVO userInfoVO = UserInfoVO.builder()
                 .id(employeeVO.getId())
                 .name(employeeVO.getName())

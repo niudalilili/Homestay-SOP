@@ -37,6 +37,7 @@
         <aspectj>1.9.4</aspectj>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
+        <sa-token-redis>1.45.0</sa-token-redis>
     </properties>
 
     <dependencyManagement>
@@ -105,8 +106,6 @@
                 <version>${springdoc-openapi}</version>
             </dependency>
 
-
-
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
@@ -130,8 +129,6 @@
                 <artifactId>classgraph</artifactId>
                 <version>4.8.174</version>
             </dependency>
-
-
 
         </dependencies>
     </dependencyManagement>

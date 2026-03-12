@@ -79,6 +79,14 @@ public interface EmployeeService {
     void update(EmployeeDTO employeeDTO);
 
     /**
+     * 更新用户姓名
+     *
+     * @param userId 用户ID
+     * @param name 用户姓名
+     */
+    void updateUserName(Long userId, String name);
+
+    /**
      * 编辑员工密码
      *
      * @param passwordEditDTO

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author yh
  * @date 2026/3/4
  **/
-@RestController
+@RestController("userFavorite")
 @RequestMapping("/user/favorite")
 @Tag(name = "收藏管理", description = "收藏相关接口")
 @Slf4j

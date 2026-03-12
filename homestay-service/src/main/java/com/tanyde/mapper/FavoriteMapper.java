@@ -3,6 +3,7 @@ package com.tanyde.mapper;
 import com.github.pagehelper.Page;
 import com.tanyde.dto.FavoriteDTO.FavoritePageQueryDTO;
 import com.tanyde.entity.FavoritePO.Favorite;
+import com.tanyde.vo.FavoritePlanVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -22,6 +23,8 @@ public interface FavoriteMapper {
      * @return 收藏列表
      */
     Page<Favorite> page(FavoritePageQueryDTO dto);
+
+    Page<FavoritePlanVO> pageWithPlan(FavoritePageQueryDTO dto);
 
     /**
      * 添加收藏

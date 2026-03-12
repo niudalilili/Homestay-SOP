@@ -49,7 +49,10 @@ public class RoleServiceImpl implements RoleService {
         // 添加角色
         roleMapper.add(role);
         // 添加角色权限关系
-        roleMapper.addRolePermission(role.getId(), permissionIds);
+        //如果权限为空（棍母角色）,就不写入数据库
+        if(permissionIds!=null && !permissionIds.isEmpty()) {
+            roleMapper.addRolePermission(role.getId(), permissionIds);
+        }
     }
 
     /**

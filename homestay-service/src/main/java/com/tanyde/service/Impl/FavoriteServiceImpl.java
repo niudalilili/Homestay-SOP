@@ -10,6 +10,7 @@ import com.tanyde.exception.BaseException;
 import com.tanyde.mapper.FavoriteMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.FavoriteService;
+import com.tanyde.vo.FavoritePlanVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         // 设置分页参数
         PageHelper.startPage(pageDto, pageSizeDto);
         // 获得数据库数据
-        Page<Favorite> page = favoriteMapper.page(dto);
+        Page<FavoritePlanVO> page = favoriteMapper.pageWithPlan(dto);
         // 返回分页结果
         return new PageResult(page.getTotal(), page.getResult());
     }

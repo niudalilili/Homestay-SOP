@@ -216,6 +216,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
+     * 更新用户姓名
+     *
+     * @param userId 用户ID
+     * @param name 用户姓名
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserName(Long userId, String name) {
+        Employee employee = Employee.builder()
+                .id(userId)
+                .name(name)
+                .build();
+        employeeMapper.update(employee);
+    }
+
+    /**
      * 编辑员工密码
      *
      * @param passwordEditDTO

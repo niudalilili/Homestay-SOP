@@ -8,10 +8,22 @@ spring:
   profiles:
     active: dev
   datasource:
-    url: jdbc:mysql://${hm.db.host}:3306/nature_education_activity?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${ty.db.host}:3306/nature_education_activity?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: ${hm.db.pw}
+    password: ${ty.db.pw}
+  data:
+    redis:
+      host: ${ty.redis.host}
+      port: ${ty.redis.port}
+      database: ${ty.redis.database}
+      password: ${ty.redis.pw}
+      lettuce:
+        pool:
+          max-active: 200
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 0
 
 logging:
   level:
