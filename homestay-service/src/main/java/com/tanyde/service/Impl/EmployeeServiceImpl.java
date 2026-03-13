@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.tanyde.constant.MessageConstant;
+import com.tanyde.constant.RedisConstant;
 import com.tanyde.constant.StatusConstant;
 import com.tanyde.dto.LoginDTO.EmployeeDTO;
 import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
@@ -15,6 +16,7 @@ import com.tanyde.exception.*;
 import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.EmployeeService;
+import com.tanyde.service.RedisService;
 import com.tanyde.vo.EmployeePageVO;
 import com.tanyde.vo.EmployeeVO;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +32,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 登录
@@ -89,6 +93,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .status(StatusConstant.ENABLE)
                     .build();
             employeeMapper.insert(employee);
+            //赋予用户角色
+            employeeMapper.addEmployeeRole(employee.getId(), 7L);
         }
         // 返回登录用户
         return employee;
@@ -212,6 +218,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         Long roleId = employeeDTO.getRoleId();
         Long employeeId = employeeDTO.getId();
         employeeMapper.updateEmployeeRole(employeeId, roleId);
+        //清除缓存
+        redisService.delete(RedisConstant.EMPLOYEE_ROLE_PREFIX + employeeId);
+        redisService.delete(RedisConstant.EMPLOYEE_PERMISSION_PREFIX + employeeId);
 
     }
 
@@ -296,5 +305,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.deleteById(id);
         //删除员工角色关系
         employeeMapper.deleteEmployeeRoleById(id);
+        //清缓存
+        redisService.delete(RedisConstant.EMPLOYEE_ROLE_PREFIX + id);
+        redisService.delete(RedisConstant.EMPLOYEE_PERMISSION_PREFIX + id);
     }
 }

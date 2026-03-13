@@ -1,6 +1,7 @@
 package com.tanyde.config;
 
 
+import com.tanyde.json.JacksonObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -15,13 +16,15 @@ public class RedisConfig {
     public RedisTemplate<String,Object>redisTemplate(RedisConnectionFactory connectionFactory){
         RedisTemplate<String,Object> template=new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
-        
+        //使用自定的时间序列化方式
+        GenericJackson2JsonRedisSerializer serializer=new GenericJackson2JsonRedisSerializer(new JacksonObjectMapper());
+
         //配置redis的key的序列化方式
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setValueSerializer(serializer);
         //配置redis的hash的序列化方式
         template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashValueSerializer(serializer);
         return template;
     }
 

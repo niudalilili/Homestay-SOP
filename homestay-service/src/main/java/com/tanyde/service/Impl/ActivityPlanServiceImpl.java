@@ -4,6 +4,7 @@ package com.tanyde.service.Impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.tanyde.constant.RedisConstant;
 import com.tanyde.dto.ActivityDTO.ActivityPlanContentDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
@@ -18,6 +19,7 @@ import com.tanyde.mapper.EmployeeMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.enumeration.ActivityStatus;
 import com.tanyde.exception.BaseException;
+import com.tanyde.service.RedisService;
 import org.springframework.util.CollectionUtils;
 import com.tanyde.service.ActivityPlanService;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +46,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     private ActivityStepMapper activityStepMapper;
     @Autowired
     private EmployeeMapper employeeMapper;
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 保存活动方案
@@ -66,7 +71,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         ActivityPlan activityPlan = new ActivityPlan();
         //复制相同类
         BeanUtils.copyProperties(activityPlanDTO, activityPlan);
-        // 修复：使用枚举替代魔法值 1
+        // 设置状态
         activityPlan.setStatus(ActivityStatus.DRAFT.getCode());
         //写入活动方案主表
         activityPlanMapper.insert(activityPlan);
@@ -84,27 +89,30 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         activityPlanContentMapper.insert(activityPlanContent);
 
         //4. 1对多步骤表
-        List<ActivityStep> activitySteps = new ArrayList<>();
+        ArrayList<ActivityStep> activitySteps = new ArrayList<>();
         //批量复制
         for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
-            ActivityStep activityStep = new ActivityStep();
-            BeanUtils.copyProperties(activityStepDTO, activityStep);
             //设置关联主表外键和时间用户
-            activityStep.setActivityPlanId(planId);
-            activityStep.setCreateTime(LocalDateTime.now());
-            activityStep.setUpdateTime(LocalDateTime.now());
-            activityStep.setCreateUser(StpUtil.getLoginIdAsLong());
-            activityStep.setUpdateUser(StpUtil.getLoginIdAsLong());
+            LocalDateTime nowTime = LocalDateTime.now();
+            Long userId = StpUtil.getLoginIdAsLong();
+            ActivityStep activityStep = ActivityStep.builder()
+                    .activityPlanId(planId)
+                    .createTime(nowTime).updateTime(nowTime).createUser(userId).updateUser(userId)
+                    .build();
+            //传递其他参数
+            BeanUtils.copyProperties(activityStepDTO, activityStep);
             //加入List
             activitySteps.add(activityStep);
         }
         //批量写入活动步骤表
         if (!activitySteps.isEmpty()) {
-            int rows = activityStepMapper.batchInsert((ArrayList<ActivityStep>) activitySteps);
-            if (rows != activitySteps.size()) {
+            if (activityStepMapper.batchInsert(activitySteps) != activitySteps.size()) {
                 throw new BaseException("步骤批量写入数量不一致");
             }
         }
+        //清除原有缓存
+        clearActivityPlanListCache();
+
     }
 
     /**
@@ -126,7 +134,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         for (Long id : ids) {
             ActivityPlan plan = activityPlanMapper.selectById(id);
             //当planname为null时，显示id
-            String planName = plan.getPlanName()!= null ? plan.getPlanName() : "ID:"+id;
+            String planName = plan.getPlanName() != null ? plan.getPlanName() : "ID:" + id;
             if (plan != null && ActivityStatus.ONLINE.getCode().equals(plan.getStatus())) {
                 throw new BaseException("活动【" + planName + "】处于上线状态，无法删除");
             }
@@ -137,6 +145,13 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         activityPlanContentMapper.deleteByActivityIds(ids);
         //删步骤表
         activityStepMapper.deleteByActivityIds(ids);
+
+        //删除id对应的活动详情缓存
+        for (Long id : ids) {
+            redisService.delete(RedisConstant.ACTIVITY_DETAIL_PREFIX + id);
+        }
+        //删除活动列表所有的缓存
+        clearActivityPlanListCache();
     }
 
     /**
@@ -149,8 +164,15 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
      **/
     @Override
     public ActivityPlanDTO selectById(Long id) {
+        //先从redis缓存中拿
+        String cacheKey = RedisConstant.ACTIVITY_DETAIL_PREFIX + id;
+        Object cacheValue = redisService.get(cacheKey);
+        //判断类型是否符合，可以防止null情况
+        if (cacheValue instanceof ActivityPlanDTO) {
+            return (ActivityPlanDTO) cacheValue;
+        }
+        //从数据库查主表
         ActivityPlanDTO activityPlanDTO = new ActivityPlanDTO();
-        //查主表
         ActivityPlan plan = activityPlanMapper.selectById(id);
         //验证活动方案是否存在
         if (plan == null) {
@@ -174,6 +196,10 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         activityPlanDTO.setContent(activityPlanContentDTO);
         activityPlanDTO.setSteps(activityStepDTOs);
 
+        //将查到的数据缓存到redis中
+        redisService.set(cacheKey, activityPlanDTO,
+                RedisConstant.ACTIVITY_DETAIL_TTL, TimeUnit.SECONDS);
+
         return activityPlanDTO;
     }
 
@@ -185,16 +211,27 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     public PageResult pageQuery(ActivityPlanPageQueryDTO dto) {
         //当分页参数为null时，设置默认值
+        if (dto == null) {
+            dto = new ActivityPlanPageQueryDTO();
+        }
         Integer pageDto = dto.getPage() == null ? 1 : dto.getPage();
         Integer pageSize = dto.getPageSize() == null ? 10 : dto.getPageSize();
+        //从缓存中获取
+        String cacheKey = RedisConstant.ACTIVITY_LIST_PREFIX + buildListCacheKey(dto, pageDto, pageSize);
+        Object cacheValue = redisService.get(cacheKey);
+        if (cacheValue instanceof PageResult) {
+            return (PageResult) cacheValue;
+        }
         //设置分页参数
         PageHelper.startPage(pageDto, pageSize);
         //获得数据库数据
         Page<ActivityPlan> page = activityPlanMapper.pageQuery(dto);
+        //缓存到redis中
+        PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+        redisService.set(cacheKey, pageResult, RedisConstant.ACTIVITY_LIST_TTL, TimeUnit.SECONDS);
         //返回pageResult
-        return new PageResult(page.getTotal(), page.getResult());
+        return pageResult;
     }
-
 
 
     /**
@@ -255,14 +292,15 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
             if (activityPlanDTO.getSteps() != null && !activityPlanDTO.getSteps().isEmpty()) {
                 ArrayList<ActivityStep> activitySteps = new ArrayList<>();
                 for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
-                    ActivityStep activityStep = new ActivityStep();
-                    BeanUtils.copyProperties(activityStepDTO, activityStep);
+                    LocalDateTime nowTime = LocalDateTime.now();
+                    Long userId = StpUtil.getLoginIdAsLong();
                     //设置关联主表外键和时间用户
-                    activityStep.setActivityPlanId(planId);
-                    activityStep.setCreateTime(LocalDateTime.now());
-                    activityStep.setUpdateTime(LocalDateTime.now());
-                    activityStep.setCreateUser(StpUtil.getLoginIdAsLong());
-                    activityStep.setUpdateUser(StpUtil.getLoginIdAsLong());
+                    ActivityStep activityStep = ActivityStep.builder()
+                            .activityPlanId(planId)
+                            .createTime(nowTime).updateTime(nowTime).createUser(userId).updateUser(userId)
+                            .build();
+                    //传递参数
+                    BeanUtils.copyProperties(activityStepDTO, activityStep);
                     //加入List
                     activitySteps.add(activityStep);
                 }
@@ -274,6 +312,9 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
                 }
             }
         }
+        //清除对应缓存
+        redisService.delete(RedisConstant.ACTIVITY_DETAIL_PREFIX + planId);
+        clearActivityPlanListCache();
     }
 
     /**
@@ -287,14 +328,16 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void changeStatus(Long id, Integer status) {
+        //检查ID是否为空
         if (id == null) {
             throw new BaseException("活动方案ID不能为空");
         }
+        //检查状态是否为空
         ActivityPlan plan = activityPlanMapper.selectById(id);
         if (plan == null) {
             throw new BaseException("活动方案不存在");
         }
-
+        //更新状态
         ActivityPlan update = new ActivityPlan();
         update.setId(id);
         update.setStatus(status);
@@ -302,7 +345,11 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         if (rows == 0) {
             throw new BaseException("状态更新失败");
         }
+        //清除对应缓存
+        redisService.delete(RedisConstant.ACTIVITY_DETAIL_PREFIX + id);
+        clearActivityPlanListCache();
     }
+
     /**
      * 仪表盘统计数据
      */
@@ -342,4 +389,45 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
                 .collect(Collectors.toList());
         return activityPlanDTOs;
     }
+
+    /**
+     * 清空活动方案列表缓存
+     *
+     * @return
+     * @date:
+     **/
+    private void clearActivityPlanListCache() {
+        redisService.deleteByPattern(RedisConstant.ACTIVITY_LIST_PREFIX + "*");
+    }
+
+    /**
+     * 构建活动方案列表缓存的键
+     **/
+    private String buildListCacheKey(ActivityPlanPageQueryDTO dto, Integer page, Integer pageSize) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(formatKeyPart(dto.getPlanName())).append("|")
+                .append(formatKeyPart(dto.getStatus())).append("|")
+                .append(formatKeyPart(dto.getActivityCategory())).append("|")
+                .append(formatKeyPart(dto.getSeason())).append("|")
+                .append(formatKeyPart(dto.getScene())).append("|")
+                .append(formatKeyPart(dto.getMinAge())).append("|")
+                .append(formatKeyPart(dto.getMaxAge())).append("|")
+                .append(formatKeyPart(dto.getMinDuration())).append("|")
+                .append(formatKeyPart(dto.getMaxDuration())).append("|")
+                .append(page).append("|")
+                .append(pageSize);
+        return builder.toString();
+    }
+    private String formatKeyPart(Object value) {
+        if (value == null) {
+            return "-";
+        }
+        String text = String.valueOf(value).trim();
+        if (text.isEmpty()) {
+            return "-";
+        }
+        return text.replace("|", "_");
+    }
+
+
 }

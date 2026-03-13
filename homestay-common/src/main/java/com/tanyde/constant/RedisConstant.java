@@ -19,12 +19,21 @@ public class RedisConstant {
      // 收藏列表缓存前缀
     public static final String FAVORITE_LIST_PREFIX = "favorite:list:";
 
-
      // 反馈列表缓存前缀
     public static final String FEEDBACK_LIST_PREFIX = "feedback:list:";
 
      // 员工权限信息缓存前缀
     public static final String EMPLOYEE_PERMISSION_PREFIX = "employee:permission:";
+
+    public static final String EMPLOYEE_ROLE_PREFIX = "employee:role:";
+
+    public static final String ROLE_PAGE_PREFIX = "role:page:";
+
+    public static final String ROLE_DETAIL_PREFIX = "role:detail:";
+
+    public static final String PERMISSION_TREE_PREFIX = "permission:tree";
+
+    public static final String PERMISSION_LIST_PREFIX = "permission:list";
 
      // 验证码缓存前缀
     public static final String VERIFICATION_CODE_PREFIX = "code:";
@@ -60,6 +69,16 @@ public class RedisConstant {
      * 员工权限：2 小时
      */
     public static final long EMPLOYEE_PERMISSION_TTL = 2 * 60 * 60;
+
+    public static final long EMPLOYEE_ROLE_TTL = 2 * 60 * 60;
+
+    public static final long ROLE_PAGE_TTL = 30 * 60;
+
+    public static final long ROLE_DETAIL_TTL = 30 * 60;
+
+    public static final long PERMISSION_TREE_TTL = 30 * 60;
+
+    public static final long PERMISSION_LIST_TTL = 30 * 60;
 
     /**
      * 验证码：5 分钟

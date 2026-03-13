@@ -81,4 +81,5 @@ public interface ActivityPlanService {
      * @date:
      **/
     List<ActivityPlanDTO> getRecommendPlan(Integer season, Integer limit);
+
 }
