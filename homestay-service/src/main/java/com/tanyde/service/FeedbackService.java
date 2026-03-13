@@ -3,6 +3,7 @@ package com.tanyde.service;
 import com.tanyde.dto.FeedbackDTO.FeedbackDTO;
 import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.result.PageResult;
+import com.tanyde.vo.FeedbackDetailVO;
 
 /**
  * 反馈服务接口
@@ -22,4 +23,12 @@ public interface FeedbackService {
      * @return 分页结果
      */
     PageResult page(FeedbackPageQueryDTO dto);
+
+    /**
+     * 根据id查询反馈详情
+     *
+     * @param id
+     * @return
+     */
+    FeedbackDetailVO detailById(Long id);
 }

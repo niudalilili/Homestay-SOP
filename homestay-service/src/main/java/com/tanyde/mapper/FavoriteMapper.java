@@ -3,6 +3,7 @@ package com.tanyde.mapper;
 import com.github.pagehelper.Page;
 import com.tanyde.dto.FavoriteDTO.FavoritePageQueryDTO;
 import com.tanyde.entity.FavoritePO.Favorite;
+import com.tanyde.vo.FavoriteAdminVO;
 import com.tanyde.vo.FavoritePlanVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -50,4 +51,20 @@ public interface FavoriteMapper {
      */
     Favorite selectByUserIdAndPlanId(@Param("userId") Long userId,
                                      @Param("activityId") Long activityId);
+
+    /**
+     * 分页查询收藏详情
+     *
+     * @param dto 查询参数
+     * @return 收藏列表
+     */
+    Page<FavoriteAdminVO> pageAdmin(FavoritePageQueryDTO dto);
+
+    /**
+     * 根据ID查询收藏详情
+     *
+     * @param id 收藏ID
+     * @return 收藏详情
+     */
+    FavoriteAdminVO getDetailById(Long id);
 }

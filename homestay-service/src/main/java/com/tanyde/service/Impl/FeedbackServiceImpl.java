@@ -5,9 +5,11 @@ import com.github.pagehelper.PageHelper;
 import com.tanyde.dto.FeedbackDTO.FeedbackDTO;
 import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.entity.FeedbackPO.Feedback;
+import com.tanyde.exception.BaseException;
 import com.tanyde.mapper.FeedbackMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.FeedbackService;
+import com.tanyde.vo.FeedbackDetailVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,5 +62,20 @@ public class FeedbackServiceImpl implements FeedbackService {
         Page<Feedback> result = feedbackMapper.page(dto);
         // 返回分页结果
         return new PageResult(result.getTotal(), result.getResult());
+    }
+
+    /**
+     * 查询反馈详情
+     *
+     * @param id 反馈ID
+     * @return 反馈详情
+     */
+    @Override
+    public FeedbackDetailVO detailById(Long id) {
+        FeedbackDetailVO detail =feedbackMapper.getDetailById(id);
+        if(detail == null){
+            throw new BaseException("反馈不存在");
+        }
+        return detail;
     }
 }

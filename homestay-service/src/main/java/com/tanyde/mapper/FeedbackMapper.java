@@ -3,6 +3,7 @@ package com.tanyde.mapper;
 import com.github.pagehelper.Page;
 import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.entity.FeedbackPO.Feedback;
+import com.tanyde.vo.FeedbackDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -24,4 +25,12 @@ public interface FeedbackMapper {
      * @param feedback 反馈信息
      */
     void insert(Feedback feedback);
+
+    /**
+     * 根据id查询反馈详情
+     *
+     * @param id 反馈id
+     * @return 反馈详情
+     */
+    FeedbackDetailVO getDetailById(Long id);
 }

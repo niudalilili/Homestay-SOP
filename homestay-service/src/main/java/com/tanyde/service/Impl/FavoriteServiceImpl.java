@@ -10,6 +10,7 @@ import com.tanyde.exception.BaseException;
 import com.tanyde.mapper.FavoriteMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.FavoriteService;
+import com.tanyde.vo.FavoriteAdminVO;
 import com.tanyde.vo.FavoritePlanVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         // 查询是否已收藏
         Favorite exist = favoriteMapper.selectByUserIdAndPlanId(userId, favoriteDTO.getActivityId());
         if (exist != null) {
-           throw new BaseException("方案已收藏");
+            throw new BaseException("方案已收藏");
         }
         // 构建收藏对象
         Favorite favorite = Favorite.builder()
@@ -98,5 +99,42 @@ public class FavoriteServiceImpl implements FavoriteService {
         Long userId = StpUtil.getLoginIdAsLong();
         // 查询收藏记录
         return favoriteMapper.selectByUserIdAndPlanId(userId, activityId) != null;
+    }
+
+    /**
+     * 管理员分页查询收藏方案
+     *
+     * @param dto 查询参数
+     * @return 分页结果
+     * @date 2026/3/4 20:29
+     **/
+    @Override
+    public PageResult adminPage(FavoritePageQueryDTO dto) {
+            //排除dto为null，设置默认值
+            if (dto == null) {
+                dto = new FavoritePageQueryDTO();}
+            Integer pageDto = dto.getPage() == null ? 1 : dto.getPage();
+            Integer pageSizeDto = dto.getPageSize() == null ? 10 : dto.getPageSize();
+            //设置分页参数
+            PageHelper.startPage(pageDto, pageSizeDto);
+            //获得数据库数据
+            Page<FavoriteAdminVO> page = favoriteMapper.pageAdmin(dto);
+            return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 管理员查询收藏方案详情
+     *
+     * @param id 收藏方案ID
+     * @return 收藏方案详情
+     * @date 2026/3/4 20:29
+     **/
+    @Override
+    public FavoriteAdminVO adminDetail(Long id) {
+        FavoriteAdminVO detail = favoriteMapper.getDetailById(id);
+        if (detail == null) {
+            throw new BaseException("收藏不存在");
+        }
+        return detail;
     }
 }

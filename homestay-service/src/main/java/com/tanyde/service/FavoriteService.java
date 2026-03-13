@@ -3,6 +3,7 @@ package com.tanyde.service;
 import com.tanyde.dto.FavoriteDTO.FavoriteDTO;
 import com.tanyde.dto.FavoriteDTO.FavoritePageQueryDTO;
 import com.tanyde.result.PageResult;
+import com.tanyde.vo.FavoriteAdminVO;
 
 /**
  * 收藏服务接口
@@ -45,4 +46,20 @@ public interface FavoriteService {
      * @date 2026/3/4
      **/
     Boolean check(Long activityId);
+    /**
+     * 管理员分页查询收藏方案
+     *
+     * @param dto 查询参数
+     * @return 分页结果
+     * @date 2026/3/4
+     **/
+    PageResult adminPage(FavoritePageQueryDTO dto);
+    /**
+     * 管理员查询收藏方案详情
+     *
+     * @param id 收藏方案ID
+     * @return 收藏方案详情
+     * @date 2026/3/4
+     **/
+    FavoriteAdminVO adminDetail(Long id);
 }

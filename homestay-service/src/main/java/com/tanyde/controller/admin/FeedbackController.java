@@ -5,10 +5,12 @@ import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.result.PageResult;
 import com.tanyde.result.Result;
 import com.tanyde.service.FeedbackService;
+import com.tanyde.vo.FeedbackDetailVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +37,19 @@ public class FeedbackController {
         PageResult pageResult = feedbackService.page(dto);
         // 返回统一结果
         return Result.success(pageResult);
+    }
+
+    /**
+     * 查询反馈详情
+     *
+     * @param id
+     * @return com.tanyde.result.Result<com.tanyde.vo.FeedbackDetailVO>
+     * @date 2026/3/8 23:04
+     **/
+    @GetMapping("/{id}")
+    public Result<FeedbackDetailVO>detail(@PathVariable Long id){
+        log.info("查询反馈详情:{}",id);
+        return Result.success(feedbackService.detailById(id));
     }
 
 

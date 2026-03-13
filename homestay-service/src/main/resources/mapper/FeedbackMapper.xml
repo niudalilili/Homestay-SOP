@@ -25,6 +25,14 @@
         order by submission_time desc
     </select>
 
+    <select id="getDetailById" resultType="com.tanyde.vo.FeedbackDetailVO">
+        select f.id,f.record_id,f.activity_id,ap.plan_name,
+               f.rating,f.detail,f.submission_time,f.status
+               from activity_feedback f
+        left join activity_plan ap on f.activity_id=ap.id
+        where f.id=#{id}
+    </select>
+
     <!-- 新增反馈 -->
     <insert id="insert" parameterType="com.tanyde.entity.FeedbackPO.Feedback">
         insert into activity_feedback
