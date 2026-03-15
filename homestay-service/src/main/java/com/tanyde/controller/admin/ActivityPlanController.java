@@ -1,6 +1,7 @@
 package com.tanyde.controller.admin;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaIgnore;
 import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
 import com.tanyde.result.PageResult;

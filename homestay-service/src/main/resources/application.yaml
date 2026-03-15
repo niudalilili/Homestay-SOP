@@ -24,6 +24,12 @@ spring:
           max-wait: -1ms
           max-idle: 10
           min-idle: 0
+ty:
+  alioss:
+    endpoint: ${ty.alioss.endpoint}
+    access-key-id: ${ty.alioss.access-key-id}
+    access-key-secret: ${ty.alioss.access-key-secret}
+    bucket-name: ${ty.alioss.bucket-name}
 
 logging:
   level:

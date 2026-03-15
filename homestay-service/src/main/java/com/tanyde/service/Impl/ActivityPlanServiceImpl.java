@@ -226,8 +226,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         PageHelper.startPage(pageDto, pageSize);
         //获得数据库数据
         Page<ActivityPlan> page = activityPlanMapper.pageQuery(dto);
-        //缓存到redis中
         PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+        //缓存到redis中
         redisService.set(cacheKey, pageResult, RedisConstant.ACTIVITY_LIST_TTL, TimeUnit.SECONDS);
         //返回pageResult
         return pageResult;
