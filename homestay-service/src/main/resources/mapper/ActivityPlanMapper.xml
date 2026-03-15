@@ -9,11 +9,11 @@
             keyProperty="id">
             insert into activity_plan
                 (plan_name, min_age, max_age, activity_category,
-                 season, duration, scene, status,
+                 season, duration, scene, status,cover_url,
                  create_time, update_time, create_user, update_user)
             values
                 (#{planName}, #{minAge}, #{maxAge}, #{activityCategory},
-                 #{season}, #{duration}, #{scene}, #{status},
+                 #{season}, #{duration}, #{scene}, #{status},#{coverUrl},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
 
@@ -44,6 +44,9 @@
             <if test="status!=null">
                 status=#{status},
             </if>
+            <if test="coverUrl!=null">
+                cover_url= #{coverUrl},
+            </if>
             <if test="updateTime!=null">
                 update_time=#{updateTime},
             </if>
@@ -66,7 +69,7 @@
     <select id="selectById" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
         select id, plan_name, min_age, max_age,
                activity_category, season, duration,
-               scene, status,
+               scene, status,cover_url,
                create_time, update_time, create_user, update_user
         from activity_plan
         where id = #{id}
@@ -75,7 +78,7 @@
     <select id="pageQuery" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
         select id, plan_name, min_age, max_age,
                activity_category, season, duration,
-               scene, status,
+               scene, status,cover_url,
                create_time, update_time, create_user, update_user
         from activity_plan
         <where>
@@ -126,7 +129,7 @@
     <select id="getBySeason" resultType="com.tanyde.entity.ActivityPO.ActivityPlan">
         select id, plan_name, min_age, max_age,
                activity_category, season, duration,
-               scene, status,
+               scene, status,cover_url,
                create_time, update_time, create_user, update_user
         from activity_plan
         where (season &amp; #{season})!=0

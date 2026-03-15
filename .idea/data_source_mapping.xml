@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/ActivityPlanMapper.xml" value="59baa5bb-d10d-4951-8958-0ad6db89d12e" />
+    <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/EmployeeMapper.xml" value="59baa5bb-d10d-4951-8958-0ad6db89d12e" />
     <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/FavoriteMapper.xml" value="59baa5bb-d10d-4951-8958-0ad6db89d12e" />
     <file url="file://$PROJECT_DIR$/homestay-service/src/main/resources/mapper/FeedbackMapper.xml" value="59baa5bb-d10d-4951-8958-0ad6db89d12e" />
   </component>

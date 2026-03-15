@@ -1,6 +1,7 @@
 package com.tanyde.controller.user;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.tanyde.dto.LoginDTO.UserAvatarUpdateDTO;
 import com.tanyde.dto.LoginDTO.UserNameUpdateDTO;
 import com.tanyde.exception.BaseException;
 import com.tanyde.result.Result;
@@ -10,6 +11,7 @@ import com.tanyde.vo.EmployeeVO;
 import com.tanyde.vo.UserInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/user")
+@Slf4j
 @Tag(name = "用户管理", description = "用户相关接口")
 public class UserController {
 
@@ -41,6 +44,7 @@ public class UserController {
                 .id(employeeVO.getId())
                 .name(employeeVO.getName())
                 .role(role)
+                .avatar(employeeVO.getAvatar())
                 .empId(String.valueOf(employeeVO.getId()))
                 .build();
         return Result.success(userInfoVO);
@@ -67,8 +71,23 @@ public class UserController {
                 .id(employeeVO.getId())
                 .name(employeeVO.getName())
                 .role(role)
+                .avatar(employeeVO.getAvatar())
                 .empId(String.valueOf(employeeVO.getId()))
                 .build();
         return Result.success(userInfoVO);
+    }
+
+    /**
+     * 更新当前用户头像
+     *
+     * @param dto
+     * @return 当前用户信息
+     */
+    @PutMapping("/avatar")
+    @Operation(summary = "更新当前用户头像")
+    public Result updateAvatar(@RequestBody UserAvatarUpdateDTO dto){
+        log.info("更新用户头像：{}", dto.getAvatar());
+        employeeService.updateAvatar(dto);
+        return  Result.success();
     }
 }

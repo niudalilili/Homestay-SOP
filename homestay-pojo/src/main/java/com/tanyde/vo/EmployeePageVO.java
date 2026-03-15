@@ -25,6 +25,8 @@ public class EmployeePageVO implements Serializable {
 
     @Schema(description = "角色名称")
     private String roleName;
+    @Schema(description = "头像")
+    private String avatar;
 
 
 }

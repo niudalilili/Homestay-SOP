@@ -77,7 +77,7 @@ public interface RoleMapper {
      * 根据roleId查询权限
      *
      * @param roleId
-     * @return java.util.List<java.lang.Long>
+     * @return java.utils.List<java.lang.Long>
      * @date 2026/2/23 22:19
      **/
     List<Long> getPermissionIdsByRoleId(Long roleId);

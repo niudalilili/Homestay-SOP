@@ -33,7 +33,7 @@ public class PermissionController {
     /**
      * 获取权限树
      *
-     * @return com.tanyde.result.Result<java.util.List<com.tanyde.vo.PermissionGroupVO>>
+     * @return com.tanyde.result.Result<java.utils.List<com.tanyde.vo.PermissionGroupVO>>
      * @date 2026/2/24
      **/
     @GetMapping("/tree")
@@ -46,7 +46,7 @@ public class PermissionController {
     /**
      * 获取当前用户权限列表
      *
-     * @return com.tanyde.result.Result<java.util.List<java.lang.String>>
+     * @return com.tanyde.result.Result<java.utils.List<java.lang.String>>
      * @date 2026/2/24
      **/
     @GetMapping("/current")

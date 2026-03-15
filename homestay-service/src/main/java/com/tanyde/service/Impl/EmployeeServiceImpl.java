@@ -7,10 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.tanyde.constant.MessageConstant;
 import com.tanyde.constant.RedisConstant;
 import com.tanyde.constant.StatusConstant;
-import com.tanyde.dto.LoginDTO.EmployeeDTO;
-import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
-import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
-import com.tanyde.dto.LoginDTO.PasswordEditDTO;
+import com.tanyde.dto.LoginDTO.*;
 import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.exception.*;
 import com.tanyde.mapper.EmployeeMapper;
@@ -19,6 +16,7 @@ import com.tanyde.service.EmployeeService;
 import com.tanyde.service.RedisService;
 import com.tanyde.vo.EmployeePageVO;
 import com.tanyde.vo.EmployeeVO;
+import com.tanyde.vo.UserInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -308,5 +306,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         //清缓存
         redisService.delete(RedisConstant.EMPLOYEE_ROLE_PREFIX + id);
         redisService.delete(RedisConstant.EMPLOYEE_PERMISSION_PREFIX + id);
+    }
+
+    /**
+     * 更新用户头像
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAvatar(UserAvatarUpdateDTO dto) {
+        //校验是否为空
+        if(dto == null || dto.getAvatar() == null || dto.getAvatar().trim().isEmpty()){
+            throw new BaseException("头像地址不能为空");
+        }
+        Long userId = StpUtil.getLoginIdAsLong();
+        //组装查表
+        Employee  employee = Employee.builder()
+                .id(userId)
+                .avatar(dto.getAvatar())
+                .build();
+        employeeMapper.update(employee);
+
     }
 }

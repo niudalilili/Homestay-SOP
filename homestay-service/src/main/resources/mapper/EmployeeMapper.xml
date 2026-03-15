@@ -10,7 +10,7 @@
 
     <!-- 根据用户名查询 -->
     <select id="getByUsername" resultType="com.tanyde.entity.LoginPO.Employee">
-        select id, username, name,
+        select id, username, name,avatar,
                password, openid, login_type, status,
                create_time, update_time, create_user, update_user
         from employee
@@ -19,7 +19,7 @@
 
     <!-- 根据openid查询 -->
     <select id="getByOpenid" resultType="com.tanyde.entity.LoginPO.Employee">
-        select id, username, name,
+        select id, username, name, avatar,
                password, openid, login_type, status,
                create_time, update_time, create_user, update_user
         from employee
@@ -28,7 +28,7 @@
 
     <select id="pageQuery" resultType="com.tanyde.vo.EmployeePageVO">
         select
-        e.id,e.username,e.name,e.status,
+        e.id,e.username,e.name,e.status,e.avatar,
         r.name as role_name
         from employee e
         left join employee_role er ON e.id=er.employee_id
@@ -56,11 +56,11 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into employee(
-            id, username, name,
+            id, username, name, avatar,
             password, openid, login_type, status,
             create_time, update_time, create_user, update_user
         ) VALUES(
-                 #{id}, #{username}, #{name},
+                 #{id}, #{username}, #{name}, #{avatar},
                  #{password}, #{openid}, #{loginType}, #{status},
                  #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
     </insert>
@@ -76,6 +76,7 @@
         <set>
             <if test="name != null">name=#{name},</if>
             <if test="username != null">username=#{username},</if>
+            <if test="avatar != null">avatar= #{avatar},</if>
             <if test="password != null">password=#{password},</if>
             <if test="openid != null">openid=#{openid},</if>
             <if test="loginType != null">login_type=#{loginType},</if>

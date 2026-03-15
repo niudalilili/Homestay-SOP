@@ -21,4 +21,6 @@ public class EmployeeDTO implements Serializable {
 
     private Long roleId;
 
+    private String avatar;
+
 }

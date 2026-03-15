@@ -1,12 +1,10 @@
 package com.tanyde.service;
 
-import com.tanyde.dto.LoginDTO.EmployeeDTO;
-import com.tanyde.dto.LoginDTO.EmployeeLoginDTO;
-import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
-import com.tanyde.dto.LoginDTO.PasswordEditDTO;
+import com.tanyde.dto.LoginDTO.*;
 import com.tanyde.entity.LoginPO.Employee;
 import com.tanyde.result.PageResult;
 import com.tanyde.vo.EmployeeVO;
+import com.tanyde.vo.UserInfoVO;
 
 public interface EmployeeService {
 
@@ -102,4 +100,9 @@ public interface EmployeeService {
      * @param id
      */
     void deleteById(Long id);
+    /**
+     * 更新员工头像
+     *
+     */
+    void updateAvatar(UserAvatarUpdateDTO ato);
 }

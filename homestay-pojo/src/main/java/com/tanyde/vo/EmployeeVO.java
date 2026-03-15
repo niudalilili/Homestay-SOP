@@ -25,4 +25,6 @@ public class EmployeeVO {
     private Integer status;
 
     private Long roleId;
+
+    private String avatar;
 }

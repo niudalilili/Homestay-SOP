@@ -23,7 +23,7 @@ public interface PermissionService {
      * 根据EmployeeId获得权限codes
      *
      * @param employeeId
-     * @return java.util.List<java.lang.String>
+     * @return java.utils.List<java.lang.String>
      * @date 2026/2/22 16:31
      **/
     public List<String> getCodesByIds(Long employeeId) ;
@@ -40,7 +40,7 @@ public interface PermissionService {
     /**
      * 获取所有权限信息
      *
-     * @return java.util.List<com.tanyde.dto.LoginDTO.RoleDTO>
+     * @return java.utils.List<com.tanyde.dto.LoginDTO.RoleDTO>
      * @date 2026/2/22 16:29
      **/
     List<String> listAll();
@@ -48,7 +48,7 @@ public interface PermissionService {
     /**
      * 获取权限树
      *
-     * @return java.util.List<com.tanyde.vo.PermissionGroupVO>
+     * @return java.utils.List<com.tanyde.vo.PermissionGroupVO>
      * @date 2026/2/24
      **/
     List<PermissionGroupVO> getTree();

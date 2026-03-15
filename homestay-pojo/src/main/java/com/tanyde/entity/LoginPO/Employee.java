@@ -33,6 +33,8 @@ public class Employee implements Serializable {
     private Integer loginType;
     @Schema(description = "状态（0-禁用 1-正常）")
     private Integer status;
+    @Schema(description = "头像")
+    private String avatar;
 
     private LocalDateTime createTime;
 

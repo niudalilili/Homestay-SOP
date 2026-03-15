@@ -50,6 +50,7 @@ public class AuthController {
                 .id(employee.getId())
                 .name(employee.getName())
                 .role(role)
+                .avatar(employee.getAvatar())
                 .empId(String.valueOf(employee.getId()))
                 .build();
         // 返回token与用户信息
