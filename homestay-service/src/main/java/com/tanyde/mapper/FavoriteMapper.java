@@ -1,6 +1,7 @@
 package com.tanyde.mapper;
 
-import com.github.pagehelper.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.dto.FavoriteDTO.FavoritePageQueryDTO;
 import com.tanyde.entity.FavoritePO.Favorite;
 import com.tanyde.vo.FavoriteAdminVO;
@@ -23,9 +24,11 @@ public interface FavoriteMapper {
      * @param dto 查询参数
      * @return 收藏列表
      */
-    Page<Favorite> page(FavoritePageQueryDTO dto);
+    IPage<Favorite> page(Page<Favorite> page,
+                         @Param("dto") FavoritePageQueryDTO dto);
 
-    Page<FavoritePlanVO> pageWithPlan(FavoritePageQueryDTO dto);
+    IPage<FavoritePlanVO> pageWithPlan(Page<FavoritePlanVO> page,
+                                       @Param("dto") FavoritePageQueryDTO dto);
 
     /**
      * 添加收藏
@@ -58,7 +61,8 @@ public interface FavoriteMapper {
      * @param dto 查询参数
      * @return 收藏列表
      */
-    Page<FavoriteAdminVO> pageAdmin(FavoritePageQueryDTO dto);
+    IPage<FavoriteAdminVO> pageAdmin(Page<FavoriteAdminVO> page,
+                                     @Param("dto") FavoritePageQueryDTO dto);
 
     /**
      * 根据ID查询收藏详情

@@ -1,8 +1,8 @@
 package com.tanyde.service.Impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.dto.FavoriteDTO.FavoriteDTO;
 import com.tanyde.dto.FavoriteDTO.FavoritePageQueryDTO;
 import com.tanyde.entity.FavoritePO.Favorite;
@@ -37,12 +37,9 @@ public class FavoriteServiceImpl implements FavoriteService {
         // 当分页参数为null时,设置默认值
         Integer pageDto = dto.getPage() == null ? 1 : dto.getPage();
         Integer pageSizeDto = dto.getPageSize() == null ? 10 : dto.getPageSize();
-        // 设置分页参数
-        PageHelper.startPage(pageDto, pageSizeDto);
-        // 获得数据库数据
-        Page<FavoritePlanVO> page = favoriteMapper.pageWithPlan(dto);
-        // 返回分页结果
-        return new PageResult(page.getTotal(), page.getResult());
+        Page<FavoritePlanVO> page = new Page<>(pageDto, pageSizeDto);
+        IPage<FavoritePlanVO> result = favoriteMapper.pageWithPlan(page, dto);
+        return new PageResult(result.getTotal(), result.getRecords());
     }
 
     /**
@@ -115,11 +112,9 @@ public class FavoriteServiceImpl implements FavoriteService {
                 dto = new FavoritePageQueryDTO();}
             Integer pageDto = dto.getPage() == null ? 1 : dto.getPage();
             Integer pageSizeDto = dto.getPageSize() == null ? 10 : dto.getPageSize();
-            //设置分页参数
-            PageHelper.startPage(pageDto, pageSizeDto);
-            //获得数据库数据
-            Page<FavoriteAdminVO> page = favoriteMapper.pageAdmin(dto);
-            return new PageResult(page.getTotal(), page.getResult());
+            Page<FavoriteAdminVO> page = new Page<>(pageDto, pageSizeDto);
+            IPage<FavoriteAdminVO> result = favoriteMapper.pageAdmin(page, dto);
+            return new PageResult(result.getTotal(), result.getRecords());
     }
 
     /**

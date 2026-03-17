@@ -7,24 +7,24 @@
     <select id="page" resultType="com.tanyde.entity.FavoritePO.Favorite">
         SELECT id,user_id,activity_id,favorite_time
         FROM activity_favorite WHERE
-        user_id = #{userId}
-        <if test="activityId != null">
-            AND activity_id = #{activityId}
+        user_id = #{dto.userId}
+        <if test="dto.activityId != null">
+            AND activity_id = #{dto.activityId}
         </if>
         ORDER BY
         favorite_time DESC
     </select>
 
     <select id="pageWithPlan" resultType="com.tanyde.vo.FavoritePlanVO">
-        SELECT ap.id, ap.plan_name, ap.min_age, ap.max_age,
+        SELECT ap.id, ap.plan_name, ap.cover_url, ap.min_age, ap.max_age,
                ap.activity_category, ap.season, ap.duration,
                ap.scene, ap.status,
                (SELECT COUNT(*) FROM activity_step s WHERE s.activity_plan_id = ap.id) AS step_count
         FROM activity_favorite f
         INNER JOIN activity_plan ap ON f.activity_id = ap.id
-        WHERE f.user_id = #{userId}
-        <if test="activityId != null">
-            AND f.activity_id = #{activityId}
+        WHERE f.user_id = #{dto.userId}
+        <if test="dto.activityId != null">
+            AND f.activity_id = #{dto.activityId}
         </if>
         ORDER BY f.favorite_time DESC
     </select>
@@ -57,11 +57,11 @@
             from activity_favorite f
             inner join activity_plan ap on f.activity_id = ap.id
         <where>
-            <if test="userId != null">
-                and f.user_id = #{userId}
+            <if test="dto.userId != null">
+                and f.user_id = #{dto.userId}
             </if>
-            <if test="activityId != null">
-                and f.activity_id = #{activityId}
+            <if test="dto.activityId != null">
+                and f.activity_id = #{dto.activityId}
             </if>
         </where>
         order by f.favorite_time desc

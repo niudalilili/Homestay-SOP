@@ -4,27 +4,21 @@
 <mapper namespace="com.tanyde.mapper.PermissionMapper">
 
 
-    <select id="getById" resultType="com.tanyde.entity.LoginPO.Permission">
-        select id, name, code, description, status, create_time, update_time
-        from permission
-        where id = #{id}
-    </select>
-
     <select id="pageQuery" resultType="com.tanyde.entity.LoginPO.Permission">
         select id, name, code, description, status, create_time, update_time
         from permission
         <where>
-            <if test="name != null and name != ''">
-                and name like concat('%', #{name}, '%')
+            <if test="dto.name != null and dto.name != ''">
+                and name like concat('%', #{dto.name}, '%')
             </if>
-            <if test="code != null and code != ''">
-                and code like concat('%', #{code}, '%')
+            <if test="dto.code != null and dto.code != ''">
+                and code like concat('%', #{dto.code}, '%')
             </if>
-            <if test="description != null and description != ''">
-                and description like concat('%', #{description}, '%')
+            <if test="dto.description != null and dto.description != ''">
+                and description like concat('%', #{dto.description}, '%')
             </if>
-            <if test="status != null">
-                and status = #{status}
+            <if test="dto.status != null">
+                and status = #{dto.status}
             </if>
         </where>
         order by create_time desc

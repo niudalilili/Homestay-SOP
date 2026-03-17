@@ -2,8 +2,8 @@ package com.tanyde.service.Impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.constant.MessageConstant;
 import com.tanyde.constant.RedisConstant;
 import com.tanyde.constant.StatusConstant;
@@ -16,7 +16,6 @@ import com.tanyde.service.EmployeeService;
 import com.tanyde.service.RedisService;
 import com.tanyde.vo.EmployeePageVO;
 import com.tanyde.vo.EmployeeVO;
-import com.tanyde.vo.UserInfoVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,11 +148,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePQDTO) {
         //分页查询
-        PageHelper.startPage(employeePQDTO.getPage(), employeePQDTO.getPageSize());
-        Page<EmployeePageVO> page = employeeMapper.pageQuery(employeePQDTO);
+        Page<EmployeePageVO> page = new Page<>(employeePQDTO.getPage(), employeePQDTO.getPageSize());
+        IPage<EmployeePageVO> result = employeeMapper.pageQuery(page, employeePQDTO);
 
-        long total = page.getTotal();
-        List<EmployeePageVO> records = page.getResult();
+        long total = result.getTotal();
+        List<EmployeePageVO> records = result.getRecords();
         return new PageResult(total, records);
     }
 
@@ -169,7 +168,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .status(status)
                 .id(id)
                 .build();
-        employeeMapper.update(employee);
+        employeeMapper.updateById(employee);
     }
 
     /**
@@ -183,7 +182,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public EmployeeVO getById(Long id) {
         //获得员工信息
-        Employee employee = employeeMapper.getById(id);
+        Employee employee = employeeMapper.selectById(id);
         //获得员工角色信息
         Long roleId = employeeMapper.getRoleIdById(id);
         //封装成VO
@@ -211,7 +210,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         //拷贝属性
         BeanUtils.copyProperties(employeeDTO, employee);
         //修改员工信息
-        employeeMapper.update(employee);
+        employeeMapper.updateById(employee);
         //修改员工角色关系
         Long roleId = employeeDTO.getRoleId();
         Long employeeId = employeeDTO.getId();
@@ -235,7 +234,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(userId)
                 .name(name)
                 .build();
-        employeeMapper.update(employee);
+        employeeMapper.updateById(employee);
     }
 
     /**
@@ -249,7 +248,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void editPassword(PasswordEditDTO passwordEditDTO) {
         //根据id获得信息
-        Employee employee = employeeMapper.getById(passwordEditDTO.getEmpId());
+        Employee employee = employeeMapper.selectById(passwordEditDTO.getEmpId());
         //将用户输入的旧密码进行MD5签名方便对比
         String oldPasswordMD5 = DigestUtils.md5DigestAsHex(passwordEditDTO.getOldPassword().getBytes());
         //账号不存在
@@ -260,7 +259,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employee.getPassword().equals(oldPasswordMD5)) {
             //将之前取出的employee中的密码改为MD5签名后的新密码
             employee.setPassword(DigestUtils.md5DigestAsHex(passwordEditDTO.getNewPassword().getBytes()));
-            employeeMapper.update(employee);
+            employeeMapper.updateById(employee);
         } else {
             //抛出密码修改错误异常
             throw new PasswordEditFailedException(MessageConstant.PASSWORD_EDIT_FAILED);
@@ -276,7 +275,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         // 1. 查询员工信息
-        Employee employee = employeeMapper.getById(id);
+        Employee employee = employeeMapper.selectById(id);
         if (employee == null) {
             throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
         }
@@ -293,7 +292,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 4. 校验：不能删除最后一个用户
-        Integer count = employeeMapper.count();
+        Long count = employeeMapper.selectCount(null);
         if (count <= 1) {
             throw new BaseException(MessageConstant.LAST_USER_DELETE_DENIED);
         }
@@ -324,7 +323,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(userId)
                 .avatar(dto.getAvatar())
                 .build();
-        employeeMapper.update(employee);
+        employeeMapper.updateById(employee);
 
     }
 }

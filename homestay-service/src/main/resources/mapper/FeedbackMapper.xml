@@ -8,20 +8,16 @@
         select id, record_id, activity_id, rating, detail, submission_time, status
         from activity_feedback
         <where>
-            <!-- 执行记录筛选 -->
-            <if test="recordId != null">
-                and record_id = #{recordId}
+            <if test="dto.recordId != null">
+                and record_id = #{dto.recordId}
             </if>
-            <!-- 方案筛选 -->
-            <if test="activityId != null">
-                and activity_id = #{activityId}
+            <if test="dto.activityId != null">
+                and activity_id = #{dto.activityId}
             </if>
-            <!-- 状态筛选 -->
-            <if test="status != null">
-                and status = #{status}
+            <if test="dto.status != null">
+                and status = #{dto.status}
             </if>
         </where>
-        <!-- 按提交时间倒序 -->
         order by submission_time desc
     </select>
 

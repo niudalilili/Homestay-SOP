@@ -1,10 +1,12 @@
 package com.tanyde.mapper;
 
-import com.github.pagehelper.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.entity.FeedbackPO.Feedback;
 import com.tanyde.vo.FeedbackDetailVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 反馈Mapper
@@ -17,7 +19,8 @@ public interface FeedbackMapper {
      * @param dto 查询参数
      * @return 反馈分页结果
      */
-    Page<Feedback> page(FeedbackPageQueryDTO dto);
+    IPage<Feedback> page(Page<Feedback> page,
+                         @Param("dto") FeedbackPageQueryDTO dto);
 
     /**
      * 新增反馈

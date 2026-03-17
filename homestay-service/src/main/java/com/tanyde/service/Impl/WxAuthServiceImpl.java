@@ -29,7 +29,7 @@ public class WxAuthServiceImpl implements WxAuthService {
         if (appId == null || appId.isEmpty() || secret == null || secret.isEmpty()) {
             throw new BaseException("微信配置缺失");
         }
-        String url = UriComponentsBuilder.fromHttpUrl("https://api.weixin.qq.com/sns/jscode2session")
+        String url = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/jscode2session")
                 .queryParam("appid", appId)
                 .queryParam("secret", secret)
                 .queryParam("js_code", code)

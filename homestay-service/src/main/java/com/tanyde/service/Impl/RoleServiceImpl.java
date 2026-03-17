@@ -1,7 +1,7 @@
 package com.tanyde.service.Impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.constant.RedisConstant;
 import com.tanyde.dto.LoginDTO.RoleDTO;
 import com.tanyde.dto.LoginDTO.RolePageQueryDTO;
@@ -52,7 +52,7 @@ public class RoleServiceImpl implements RoleService {
             throw new BaseException("角色编码已存在");
         }
         // 添加角色
-        roleMapper.add(role);
+        roleMapper.insert(role);
         // 添加角色权限关系
         //如果权限为空（棍母角色）,就不写入数据库
         if (permissionIds != null && !permissionIds.isEmpty()) {
@@ -79,7 +79,7 @@ public class RoleServiceImpl implements RoleService {
         Role role = new Role();
         BeanUtils.copyProperties(roleDTO, role);
         // 更新角色
-        roleMapper.update(role);
+        roleMapper.updateById(role);
         // 修改角色权限关系
         roleMapper.deleteRolePermission(roleId);
         roleMapper.addRolePermission(roleId, permissionIds);
@@ -98,7 +98,7 @@ public class RoleServiceImpl implements RoleService {
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         //获取角色信息
-        Role role = roleMapper.getById(id);
+        Role role = roleMapper.selectById(id);
         //检查是否还有此角色的用户并且是否为超级管理员
         if (employeeMapper.countByRoleId(id) > 0) {
             throw new BaseException("此角色下有员工，不能删除");
@@ -106,7 +106,7 @@ public class RoleServiceImpl implements RoleService {
             throw new BaseException("超级管理员不能删除");
         } else {
             // 删除角色
-            roleMapper.deleteRole(id);
+            roleMapper.deleteById(id);
             // 删除角色权限关系
             roleMapper.deleteRolePermission(id);
         }
@@ -130,7 +130,7 @@ public class RoleServiceImpl implements RoleService {
             return (RoleVO) cached;
         }
         // 获取角色id和权限ids
-        Role role = roleMapper.getById(roleId);
+        Role role = roleMapper.selectById(roleId);
         List<Long> permissionIds = roleMapper.getPermissionIdsByRoleId(roleId);
         // 封装数据
         RoleVO roleVO = new RoleVO();
@@ -176,13 +176,9 @@ public class RoleServiceImpl implements RoleService {
         //设置分页参数
         Integer pageIndex = rolePQDTO.getPage() == null ? 1 : rolePQDTO.getPage();
         Integer pageSize = rolePQDTO.getPageSize() == null ? 10 : rolePQDTO.getPageSize();
-        PageHelper.startPage(pageIndex, pageSize);
-        //查询数据
-        Page<Role> page = roleMapper.pageQuery(rolePQDTO);
-        //返回pageResult
-        long total = page.getTotal();
-        List<Role> records = page.getResult();
-        return new PageResult(total, records);
+        Page<Role> page = new Page<>(pageIndex, pageSize);
+        IPage<Role> result = roleMapper.pageQuery(page, rolePQDTO);
+        return new PageResult(result.getTotal(), result.getRecords());
     }
 
     /**

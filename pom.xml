@@ -28,12 +28,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <lombook>1.18.32</lombook>
         <druid>1.2.1</druid>
-        <pagehelper>1.4.7</pagehelper>
         <knife4j>4.5.0</knife4j>
         <springdoc-openapi>2.8.9</springdoc-openapi>
         <hutool.version>5.8.11</hutool.version>
         <mysql.version>8.0.33</mysql.version>
-        <mybatis.spring>3.0.3</mybatis.spring>
+        <mybatis-plus>3.5.7</mybatis-plus>
         <aspectj>1.9.4</aspectj>
         <fastjson>1.2.76</fastjson>
         <commons.lang>2.6</commons.lang>
@@ -49,11 +48,11 @@
                 <version>${mysql.version}</version>
             </dependency>
 
-            <!--mybatis-->
+            <!--mybatis-plus for spring boot3-->
             <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>${mybatis.spring}</version>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus}</version>
             </dependency>
 
             <!--hutool工具包-->
@@ -73,12 +72,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.github.pagehelper</groupId>
-                <artifactId>pagehelper-spring-boot-starter</artifactId>
-                <version>${pagehelper}</version>
             </dependency>
 
             <dependency>

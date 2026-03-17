@@ -1,7 +1,7 @@
 package com.tanyde.service.Impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.constant.RedisConstant;
 import com.tanyde.dto.LoginDTO.PermissionDTO;
 import com.tanyde.dto.LoginDTO.PermissionPageQueryDTO;
@@ -46,7 +46,7 @@ public class PermissionServiceImpl implements PermissionService {
     public PermissionDTO getById(Long id) {
         PermissionDTO permissionDTO = new PermissionDTO();
         //获取role数据
-        Permission permission = permissionMapper.getById(id);
+        Permission permission = permissionMapper.selectById(id);
         BeanUtils.copyProperties(permission, permissionDTO);
         return permissionDTO;
     }
@@ -107,12 +107,12 @@ public class PermissionServiceImpl implements PermissionService {
             return (PageResult) cacheValue;
         }
         //未命中从数据库查
-        PageHelper.startPage(pageIndex, pageSize);
-        Page<Permission> page = permissionMapper.pageQuery(permissionPQDTO);
+        Page<Permission> page = new Page<>(pageIndex, pageSize);
+        IPage<Permission> resultPage = permissionMapper.pageQuery(page, permissionPQDTO);
 
-        long total = page.getTotal();
+        long total = resultPage.getTotal();
         //将PO转化为DTO的list
-        List<PermissionDTO> records = page.getResult().stream()
+        List<PermissionDTO> records = resultPage.getRecords().stream()
                 .map(permission -> {
                     PermissionDTO permissionDTO = new PermissionDTO();
                     BeanUtils.copyProperties(permission, permissionDTO);

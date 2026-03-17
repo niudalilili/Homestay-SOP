@@ -1,19 +1,17 @@
 package com.tanyde.mapper;
 
 
-import com.github.pagehelper.Page;
-import com.tanyde.annotation.AutoFill;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.dto.LoginDTO.EmployeePageQueryDTO;
 import com.tanyde.entity.LoginPO.Employee;
-import com.tanyde.enumeration.OperationType;
 import com.tanyde.vo.EmployeePageVO;
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface EmployeeMapper {
+public interface EmployeeMapper extends BaseMapper<Employee> {
 
     /**
      * 根据用户名查询数据
@@ -35,17 +33,6 @@ public interface EmployeeMapper {
 
 
     /**
-     * 插入员工数据
-     *
-     * @param employee
-     * @return void
-     * @author TanyDe
-     * @create 2026/1/4
-     **/
-    @AutoFill(value = OperationType.INSERT)
-    void insert(Employee employee);
-
-    /**
      * 添加员工角色信息
      *
      * @param id
@@ -59,49 +46,14 @@ public interface EmployeeMapper {
      * 分页查询
      *
      * @param employeePageQueryDTO
+     * @param page
      * @return com.github.pagehelper.Page<com.tanyde.entity.LoginPO.Employee>
      * @author TanyDe
      * @create 2026/1/4
      **/
-    Page<EmployeePageVO> pageQuery(EmployeePageQueryDTO employeePageQueryDTO);
+    IPage<EmployeePageVO> pageQuery(Page<EmployeePageVO> page,
+                                    @Param("dto") EmployeePageQueryDTO employeePageQueryDTO);
 
-    /**
-     * 更新员工数据
-     *
-     * @param employee
-     * @return void
-     * @author TanyDe
-     * @create 2026/1/4
-     **/
-    @AutoFill(value = OperationType.UPDATE)
-    void update(Employee employee);
-
-    /**
-     * 根据id查询员工信息
-     *
-     * @param id
-     * @return com.tanyde.entity.LoginPO.Employee
-     * @author TanyDe
-     * @create 2026/1/4
-     **/
-    @Select("select * from employee where id=#{id}")
-    Employee getById(Long id);
-
-    /**
-     * 根据id删除员工
-     *
-     * @param id
-     */
-    @Delete("delete from employee where id = #{id}")
-    void deleteById(Long id);
-
-    /**
-     * 统计员工数量
-     *
-     * @return
-     */
-    @Select("select count(*) from employee")
-    Integer count();
 
     /**
      * 根据id查询员工角色信息

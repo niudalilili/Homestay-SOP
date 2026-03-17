@@ -1,7 +1,7 @@
 package com.tanyde.service.Impl;
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.dto.FeedbackDTO.FeedbackDTO;
 import com.tanyde.dto.FeedbackDTO.FeedbackPageQueryDTO;
 import com.tanyde.entity.FeedbackPO.Feedback;
@@ -56,12 +56,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         // 处理默认分页参数
         Integer page = dto.getPage() == null ? 1 : dto.getPage();
         Integer pageSize = dto.getPageSize() == null ? 20 : dto.getPageSize();
-        // 启动分页
-        PageHelper.startPage(page, pageSize);
-        // 执行查询
-        Page<Feedback> result = feedbackMapper.page(dto);
-        // 返回分页结果
-        return new PageResult(result.getTotal(), result.getResult());
+        Page<Feedback> pageQuery = new Page<>(page, pageSize);
+        IPage<Feedback> result = feedbackMapper.page(pageQuery, dto);
+        return new PageResult(result.getTotal(), result.getRecords());
     }
 
     /**

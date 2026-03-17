@@ -14,6 +14,7 @@ import java.io.Serializable;
 public class FavoritePlanVO implements Serializable {
     private Long id;
     private String planName;
+    private String coverUrl;
     private Integer minAge;
     private Integer maxAge;
     private String activityCategory;

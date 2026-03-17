@@ -1,7 +1,8 @@
 package com.tanyde.mapper;
 
 
-import com.github.pagehelper.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.annotation.AutoFill;
 import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanPageQueryDTO;
@@ -51,7 +52,8 @@ public interface ActivityPlanMapper {
      * @param dto
      * @return
      **/
-    Page<ActivityPlan> pageQuery(ActivityPlanPageQueryDTO dto);
+    IPage<ActivityPlan> pageQuery(Page<ActivityPlan> page,
+                                  @Param("dto") ActivityPlanPageQueryDTO dto);
 
     /**
      * 更新活动方案

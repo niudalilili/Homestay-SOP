@@ -2,8 +2,8 @@ package com.tanyde.service.Impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.constant.RedisConstant;
 import com.tanyde.dto.ActivityDTO.ActivityPlanContentDTO;
 import com.tanyde.dto.ActivityDTO.ActivityPlanDTO;
@@ -20,6 +20,7 @@ import com.tanyde.result.PageResult;
 import com.tanyde.enumeration.ActivityStatus;
 import com.tanyde.exception.BaseException;
 import com.tanyde.service.RedisService;
+import com.tanyde.utils.BatchCopyUtil;
 import org.springframework.util.CollectionUtils;
 import com.tanyde.service.ActivityPlanService;
 import org.springframework.beans.BeanUtils;
@@ -222,11 +223,9 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         if (cacheValue instanceof PageResult) {
             return (PageResult) cacheValue;
         }
-        //设置分页参数
-        PageHelper.startPage(pageDto, pageSize);
-        //获得数据库数据
-        Page<ActivityPlan> page = activityPlanMapper.pageQuery(dto);
-        PageResult pageResult = new PageResult(page.getTotal(), page.getResult());
+        Page<ActivityPlan> page = new Page<>(pageDto, pageSize);
+        IPage<ActivityPlan> resultPage = activityPlanMapper.pageQuery(page, dto);
+        PageResult pageResult = new PageResult(resultPage.getTotal(), resultPage.getRecords());
         //缓存到redis中
         redisService.set(cacheKey, pageResult, RedisConstant.ACTIVITY_LIST_TTL, TimeUnit.SECONDS);
         //返回pageResult
@@ -290,20 +289,8 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
 
             //批量复制
             if (activityPlanDTO.getSteps() != null && !activityPlanDTO.getSteps().isEmpty()) {
-                ArrayList<ActivityStep> activitySteps = new ArrayList<>();
-                for (ActivityStepDTO activityStepDTO : activityPlanDTO.getSteps()) {
-                    LocalDateTime nowTime = LocalDateTime.now();
-                    Long userId = StpUtil.getLoginIdAsLong();
-                    //设置关联主表外键和时间用户
-                    ActivityStep activityStep = ActivityStep.builder()
-                            .activityPlanId(planId)
-                            .createTime(nowTime).updateTime(nowTime).createUser(userId).updateUser(userId)
-                            .build();
-                    //传递参数
-                    BeanUtils.copyProperties(activityStepDTO, activityStep);
-                    //加入List
-                    activitySteps.add(activityStep);
-                }
+                //调用工具批量复制
+                ArrayList<ActivityStep> activitySteps = BatchCopyUtil.copyStepDTO(activityPlanDTO,planId);
                 //批量写入活动步骤表
                 int rows = activityStepMapper.batchInsert(activitySteps);
                 //检查批量插入数量是否与steps数量一样
@@ -356,7 +343,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     public Map<String, Object> getDashboardStats() {
         int totalPlans = activityPlanMapper.countAll();
-        Integer totalEmployees = employeeMapper.count();
+        Long totalEmployees = employeeMapper.selectCount(null);
         LocalDate today = LocalDate.now();
         LocalDate firstDay = today.withDayOfMonth(1);
         LocalDateTime startTime = firstDay.atStartOfDay();
@@ -365,7 +352,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalPlans", totalPlans);
-        stats.put("totalEmployees", totalEmployees == null ? 0 : totalEmployees);
+        stats.put("totalEmployees", totalEmployees == null ? 0L : totalEmployees);
         stats.put("monthlyNewPlans", monthlyNewPlans == null ? 0 : monthlyNewPlans);
         return stats;
     }
