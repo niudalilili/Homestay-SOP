@@ -60,7 +60,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(ActivityPlanDTO activityPlanDTO) {
-        // 1. 防御性检查 (尽管Controller层有校验，Service层建议保留兜底)
+        // 1. 防御性检查
         if (activityPlanDTO.getContent() == null) {
             throw new BaseException("活动方案扩展内容不能为空");
         }
@@ -102,7 +102,6 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
 
         //清除原有缓存
         clearActivityPlanListCache();
-
     }
 
     /**
@@ -130,7 +129,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
             }
         }
 
-        activityPlanMapper.deleteBatchIds(ids);
+        activityPlanMapper.deleteByIds(ids);
         //删联表
         activityPlanContentMapper.delete(new LambdaQueryWrapper<ActivityPlanContent>()
                 .in(ActivityPlanContent::getActivityPlanId, ids));
