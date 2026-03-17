@@ -13,24 +13,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface EmployeeMapper extends BaseMapper<Employee> {
 
-    /**
-     * 根据用户名查询数据
-     *
-     * @param username
-     * @return com.tanyde.entity.LoginPO.Employee
-     * @author TanyDe
-     * @create 2026/1/3
-     **/
-    Employee getByUsername(String username);
-
-    /**
-     * 根据openid查询用户
-     *
-     * @param openid 微信openid
-     * @return 用户信息
-     */
-    Employee getByOpenid(String openid);
-
 
     /**
      * 添加员工角色信息
@@ -83,4 +65,7 @@ public interface EmployeeMapper extends BaseMapper<Employee> {
      * @return
      */
     void deleteEmployeeRoleById(Long id);
+
+    Employee getByName(String name);
+
 }

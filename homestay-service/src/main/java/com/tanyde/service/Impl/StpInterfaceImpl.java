@@ -9,6 +9,7 @@ import com.tanyde.service.EmployeeService;
 import com.tanyde.service.PermissionService;
 import com.tanyde.service.RedisService;
 import com.tanyde.service.RoleService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,13 +23,11 @@ import java.util.concurrent.TimeUnit;
  **/
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class StpInterfaceImpl implements StpInterface {
-    @Autowired
-    private PermissionService permissionService;
-    @Autowired
-    private RoleService roleService;
-    @Autowired
-    private RedisService redisService;
+    private final PermissionService permissionService;
+    private final RoleService roleService;
+    private final RedisService redisService;
 
     /**
      * 返回一个账号拥有权限码集合

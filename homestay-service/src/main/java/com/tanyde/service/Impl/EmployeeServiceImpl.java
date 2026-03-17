@@ -2,6 +2,7 @@ package com.tanyde.service.Impl;
 
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.tanyde.constant.MessageConstant;
@@ -16,6 +17,7 @@ import com.tanyde.service.EmployeeService;
 import com.tanyde.service.RedisService;
 import com.tanyde.vo.EmployeePageVO;
 import com.tanyde.vo.EmployeeVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +27,11 @@ import org.springframework.util.DigestUtils;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    @Autowired
-    private EmployeeMapper employeeMapper;
-    @Autowired
-    private RedisService redisService;
+    private final EmployeeMapper employeeMapper;
+    private final RedisService redisService;
 
     /**
      * 登录
@@ -46,7 +47,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         String password = employeeLoginDTO.getPassword();
 
         //1.查询用户名数据库中的数据
-        Employee employee = employeeMapper.getByUsername(username);
+        Employee employee = employeeMapper.selectOne(new LambdaQueryWrapper<Employee>()
+                .eq(Employee::getUsername, username));
         //2.处理各种异常
         //账号不存在
         if (employee == null) {
@@ -79,7 +81,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new BaseException("openid不能为空");
         }
         // 查询是否已存在
-        Employee employee = employeeMapper.getByOpenid(openid);
+        Employee employee = employeeMapper.selectOne(new LambdaQueryWrapper<Employee>()
+                .eq(Employee::getOpenid, openid));
         if (employee == null) {
             // 不存在则创建新用户
             employee = Employee.builder()

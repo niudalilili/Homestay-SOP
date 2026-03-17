@@ -7,6 +7,7 @@ import com.tanyde.result.Result;
 import com.tanyde.service.FavoriteService;
 import com.tanyde.vo.FavoriteAdminVO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/favorite")
 @Tag(name = "收藏管理", description = "收藏相关接口")
 @Slf4j
+@RequiredArgsConstructor
 public class FavoriteController {
-    @Autowired
-    private FavoriteService favoriteService;
+    private final FavoriteService favoriteService;
 
     /**
      * 分页查询收藏

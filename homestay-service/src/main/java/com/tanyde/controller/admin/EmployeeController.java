@@ -17,6 +17,7 @@ import com.tanyde.vo.EmployeeLoginVO;
 import com.tanyde.vo.EmployeeVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +32,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/employee")
 @Tag(name = "员工管理", description = "员工管理相关接口")
 @Slf4j
+@RequiredArgsConstructor
 public class EmployeeController {
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
     /**
      * 登录

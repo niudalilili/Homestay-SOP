@@ -5,6 +5,7 @@ import com.tanyde.result.Result;
 import com.tanyde.service.PermissionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +26,9 @@ import com.tanyde.vo.PermissionGroupVO;
 @RequestMapping("/admin/permission")
 @Tag(name = "权限管理", description = "权限管理相关接口")
 @Slf4j
+@RequiredArgsConstructor
 public class PermissionController {
-
-    @Autowired
-    private PermissionService permissionService;
+    private final PermissionService permissionService;
 
     /**
      * 获取权限树

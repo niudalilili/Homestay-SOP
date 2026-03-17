@@ -1,6 +1,9 @@
 package com.tanyde.entity.ActivityPO;
 
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "活动方案")
+@TableName("activity_plan")
 public class ActivityPlan implements Serializable {
     private static final long serialVersionUID=1L;
 
@@ -38,11 +42,15 @@ public class ActivityPlan implements Serializable {
     @Schema(description = "状态")
     private Integer status;
 
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private  LocalDateTime updateTime;
 
+    @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
 }

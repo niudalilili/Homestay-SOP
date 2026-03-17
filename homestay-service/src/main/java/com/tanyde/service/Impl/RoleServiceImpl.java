@@ -12,6 +12,7 @@ import com.tanyde.result.PageResult;
 import com.tanyde.service.RedisService;
 import com.tanyde.service.RoleService;
 import com.tanyde.vo.RoleVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +24,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private EmployeeMapper employeeMapper;
-    @Autowired
-    private RedisService redisService;
+    private final RoleMapper roleMapper;
+    private final EmployeeMapper employeeMapper;
+    private final RedisService redisService;
 
     /**
      * 添加角色

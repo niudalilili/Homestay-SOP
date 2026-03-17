@@ -1,6 +1,9 @@
 package com.tanyde.entity.ActivityPO;
 
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@TableName("activity_plan_content")
 public class ActivityPlanContent implements Serializable {
 
     private static final Long serialVersionUID=1L;
@@ -37,11 +41,15 @@ public class ActivityPlanContent implements Serializable {
 
     private String specialReminder;
 
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private  LocalDateTime updateTime;
 
+    @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
 }

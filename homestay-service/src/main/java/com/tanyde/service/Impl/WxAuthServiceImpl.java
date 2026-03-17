@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tanyde.exception.BaseException;
 import com.tanyde.service.WxAuthService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
+@RequiredArgsConstructor
 public class WxAuthServiceImpl implements WxAuthService {
 
     @Value("${wx.appid:}")

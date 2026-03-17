@@ -9,6 +9,7 @@ import com.tanyde.service.RoleService;
 import com.tanyde.vo.RoleVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/admin/role")
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "角色管理", description = "角色管理相关接口")
 public class RoleController {
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
     /**
      * 添加角色

@@ -12,6 +12,7 @@ import com.tanyde.mapper.PermissionMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.PermissionService;
 import com.tanyde.service.RedisService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PermissionServiceImpl implements PermissionService {
-    @Autowired
-    private PermissionMapper permissionMapper;
-    @Autowired
-    private RoleMapper roleMapper;
-    @Autowired
-    private RedisService redisService;
+    private final PermissionMapper permissionMapper;
+    private final RoleMapper roleMapper;
+    private final RedisService redisService;
 
     /**
      * 根据ID获得权限信息

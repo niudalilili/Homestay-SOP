@@ -3,27 +3,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tanyde.mapper.EmployeeMapper">
 
-    <delete id="deleteEmployeeRoleById">
-        delete from employee_role
-               where employee_id=#{employeeId}
-    </delete>
+    <insert id="addEmployeeRole">
+        insert into employee_role(employee_id, role_id)
+        values (#{id}, #{roleId})
+    </insert>
 
-    <!-- 根据用户名查询 -->
-    <select id="getByUsername" resultType="com.tanyde.entity.LoginPO.Employee">
-        select id, username, name,avatar,
-               password, openid, login_type, status,
-               create_time, update_time, create_user, update_user
-        from employee
-        where username=#{username}
+    <select id="getRoleIdById" resultType="java.lang.Long">
+        select role_id
+        from employee_role
+        where employee_id = #{employeeId}
     </select>
 
-    <!-- 根据openid查询 -->
-    <select id="getByOpenid" resultType="com.tanyde.entity.LoginPO.Employee">
+    <update id="updateEmployeeRole">
+        update employee_role
+        set role_id = #{roleId}
+        where employee_id = #{employeeId}
+    </update>
+
+    <select id="countByRoleId" resultType="java.lang.Integer">
+        select count(*)
+        from employee_role
+        where role_id = #{id}
+    </select>
+
+    <delete id="deleteEmployeeRoleById">
+        delete from employee_role
+        where employee_id = #{id}
+    </delete>
+
+    <select id="getByName" resultType="com.tanyde.entity.LoginPO.Employee">
         select id, username, name, avatar,
                password, openid, login_type, status,
                create_time, update_time, create_user, update_user
         from employee
-        where openid=#{openid}
+        where name = #{name}
+        limit 1
     </select>
 
     <select id="pageQuery" resultType="com.tanyde.vo.EmployeePageVO">
@@ -44,31 +58,6 @@
         order by e.id ASC
     </select>
 
-    <select id="getRoleIdById" resultType="java.lang.Long">
-        select role_id
-        from employee_role
-        where employee_id = #{employeeId}
-    </select>
-
-    <select id="countByRoleId" resultType="java.lang.Integer">
-        select count(*)
-        from employee_role
-        where role_id = #{id}
-    </select>
-
-
-    <insert id="addEmployeeRole">
-        insert into employee_role(
-            employee_id, role_id
-        ) VALUES(#{id}, #{roleId})
-    </insert>
-
-
-    <update id="updateEmployeeRole">
-        update employee_role
-        set role_id= #{roleId}
-        where employee_id= #{employeeId}
-    </update>
 
 
 </mapper>

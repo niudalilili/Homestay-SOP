@@ -12,6 +12,7 @@ import com.tanyde.result.PageResult;
 import com.tanyde.service.FavoriteService;
 import com.tanyde.vo.FavoriteAdminVO;
 import com.tanyde.vo.FavoritePlanVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
-    @Autowired
-    private FavoriteMapper favoriteMapper;
+    private final FavoriteMapper favoriteMapper;
 
     /**
      * 分页查询收藏方案

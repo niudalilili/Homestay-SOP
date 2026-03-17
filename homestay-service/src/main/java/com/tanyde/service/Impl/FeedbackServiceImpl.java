@@ -10,6 +10,7 @@ import com.tanyde.mapper.FeedbackMapper;
 import com.tanyde.result.PageResult;
 import com.tanyde.service.FeedbackService;
 import com.tanyde.vo.FeedbackDetailVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,9 @@ import java.time.LocalDateTime;
  * 反馈服务实现
  */
 @Service
+@RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
-    @Autowired
-    private FeedbackMapper feedbackMapper;
+    private final FeedbackMapper feedbackMapper;
 
     /**
      * 提交反馈

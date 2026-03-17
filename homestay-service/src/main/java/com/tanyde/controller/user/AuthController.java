@@ -11,6 +11,7 @@ import com.tanyde.vo.AuthLoginVO;
 import com.tanyde.vo.UserInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,16 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 @Tag(name = "认证管理", description = "认证相关接口")
 @Slf4j
+@RequiredArgsConstructor
 public class AuthController {
-
-    @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private WxAuthService wxAuthService;
+    private final EmployeeService employeeService;
+    private final RoleService roleService;
+    private final WxAuthService wxAuthService;
 
     @PostMapping("/login")
     @Operation(summary = "微信登录")

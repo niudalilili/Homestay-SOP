@@ -4,6 +4,7 @@ package com.tanyde.controller.admin;
 import com.tanyde.result.Result;
 import com.tanyde.utils.AliOssUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +20,9 @@ import java.util.UUID;
 @RequestMapping("/admin/common")
 @Tag(name = "通用接口", description = "通用接口")
 @Slf4j
+@RequiredArgsConstructor
 public class CommonController {
-    @Autowired
-    private AliOssUtil aliOssUtil;
+    private final AliOssUtil aliOssUtil;
 
     @PostMapping("/upload")
     public Result<String> upload(MultipartFile file,

@@ -8,6 +8,7 @@ import com.tanyde.result.Result;
 import com.tanyde.service.ActivityPlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +23,9 @@ import java.util.List;
 @RequestMapping("/user/activityPlan")
 @Tag(name = "方案管理", description = "方案相关接口")
 @Slf4j
+@RequiredArgsConstructor
 public class ActivityPlanController {
-
-    @Autowired
-    private ActivityPlanService activityPlanService;
+    private final ActivityPlanService activityPlanService;
 
     /**
      * 根据id查询方案

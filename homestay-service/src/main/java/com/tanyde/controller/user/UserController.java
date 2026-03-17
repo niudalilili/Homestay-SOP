@@ -11,6 +11,7 @@ import com.tanyde.vo.EmployeeVO;
 import com.tanyde.vo.UserInfoVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "用户管理", description = "用户相关接口")
 public class UserController {
-
-    @Autowired
-    private EmployeeService employeeService;
-
-    @Autowired
-    private RoleService roleService;
+    private final EmployeeService employeeService;
+    private final RoleService roleService;
 
     @GetMapping("/userInfo")
     @Operation(summary = "获取当前用户信息")
