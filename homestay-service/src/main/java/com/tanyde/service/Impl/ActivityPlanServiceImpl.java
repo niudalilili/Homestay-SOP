@@ -214,6 +214,7 @@ public class ActivityPlanServiceImpl implements ActivityPlanService {
         if (cacheValue instanceof PageResult) {
             return (PageResult) cacheValue;
         }
+        //数据库分页查询
         Page<ActivityPlan> page = new Page<>(pageDto, pageSize);
         LambdaQueryWrapper<ActivityPlan> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(dto.getPlanName() != null && !dto.getPlanName().isEmpty(), ActivityPlan::getPlanName, dto.getPlanName())

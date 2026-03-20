@@ -12,8 +12,8 @@ import com.tanyde.service.FeedbackService;
 import com.tanyde.vo.FeedbackDetailVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -32,10 +32,28 @@ public class FeedbackServiceImpl implements FeedbackService {
      */
     @Override
     public void submit(FeedbackDTO feedbackDTO) {
+        Integer rating = feedbackDTO.getRating() == null ? 5 : feedbackDTO.getRating();
+        if (rating < 1 || rating > 5) {
+            throw new BaseException("评分星级需在1-5之间");
+        }
+        String detail = StringUtils.hasText(feedbackDTO.getDetail()) ? feedbackDTO.getDetail() : feedbackDTO.getContent();
+        if (!StringUtils.hasText(detail)) {
+            throw new BaseException("反馈内容不能为空");
+        }
         // 构建反馈实体
         Feedback feedback = new Feedback();
         // 拷贝参数
         BeanUtils.copyProperties(feedbackDTO, feedback);
+        Long recordId = feedbackDTO.getRecordId();
+        if (recordId == null) {
+            recordId = feedbackDTO.getActivityId();
+        }
+        if (recordId == null) {
+            recordId = 0L;
+        }
+        feedback.setRecordId(recordId);
+        feedback.setRating(rating);
+        feedback.setDetail(detail);
         // 设置提交时间
         feedback.setSubmissionTime(LocalDateTime.now());
         // 默认状态

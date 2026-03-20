@@ -30,6 +30,8 @@ public class FeedbackDTO implements Serializable {
 
     private String detail;
 
+    private String content;
+
     private Integer status;
 
 }
